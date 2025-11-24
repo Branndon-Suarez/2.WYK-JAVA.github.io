@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Rol</title>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-rol-form" class="formulario" method="POST">
+        <h1>Actualizar Rol</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idRol" name="idRol" th:value="${formActRol.idRol}">
+
+            <div class="campo">
+                <label for="rol">Rol</label>
+                <div class="contenedor-input">
+                    <input type="text" id="rol" name="rol" th:value="${formActRol.rol}" placeholder="rol" required>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="clasificacion">Clasificación</label>
+                <div class="contenedor-input">
+                    <select id="clasificacion" name="clasificacion" required>
+                        <option value="EMPLEADO" th:selected="${formActRol.clasificacion == 'EMPLEADO'}">EMPLEADO
+                        </option>
+                        <option value="ADMINISTRADOR" th:selected="${formActRol.clasificacion == 'ADMINISTRADOR'}">
+                            ADMINISTRADOR
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoRol">Estado</label>
+                <div class="contenedor-input">
+                    <select id="estadoRol" name="estadoRol" required>
+                        <option value="true" th:selected="${formActRol.estadoRol}">✓ Activo</option>
+                        <option value="false" th:selected="${!formActRol.estadoRol}">✗ Inactivo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Rol
+        </button>
+    </form>
+
+</main>
+
+<script>
+    const URL_UPDATE = /*[[@{/roles/actualizar}]]*/ "/roles/actualizar";
+    const URL_REDIRECT = /*[[@{/roles/home}]]*/ "/roles/home";
+</script>
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script th:src="@{/js/rol/rol.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+<script th:src="@{/js/rol/confirmUpdate.js}"></script>
+</body>
+</html>

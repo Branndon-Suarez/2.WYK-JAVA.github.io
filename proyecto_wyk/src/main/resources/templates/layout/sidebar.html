@@ -1,0 +1,195 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<nav th:fragment="sidebar" aria-label="Menú de navegación" class="sidebar">
+
+    <div class="logo">🥐</div>
+
+    <ul>
+        <!-- INICIO -->
+        <li title="Inicio">
+            <a th:href="@{/roles/home}" class="nav-btn" aria-label="Inicio">
+                <lord-icon src="https://cdn.lordicon.com/oeotfwsx.json"
+                           colors="primary:#ffffff"
+                           trigger="hover"
+                           style="width:40px;height:40px">
+                </lord-icon>
+            </a>
+        </li>
+
+        <!-- USUARIOS (visible siempre) -->
+        <li class="has-submenu" title="Usuarios">
+            <button class="nav-btn" aria-label="Usuarios" aria-expanded="false">
+                <lord-icon src="https://cdn.lordicon.com/bushiqea.json"
+                           trigger="hover"
+                           colors="primary:#ffffff"
+                           style="width:45px;height:45px">
+                </lord-icon>
+            </button>
+
+            <ul class="submenu">
+                <li>
+                    <a th:href="@{/usuarios}">
+                        <lord-icon src="https://cdn.lordicon.com/bushiqea.json"
+                                   trigger="hover"
+                                   colors="primary:#ffffff"
+                                   style="width:50px;height:50px">
+                        </lord-icon>
+                        Usuarios
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/roles/home}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/zhiiqoue.json"
+                                trigger="morph"
+                                state="morph-open"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                        Roles
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/tareas}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/wwcdwkaf.json"
+                                trigger="hover"
+                                state="morph-open"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                        Tareas
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- INVENTARIO -->
+        <li class="has-submenu" title="Inventario">
+            <button class="nav-btn" aria-label="Productos" aria-expanded="false">
+                <lord-icon
+                        src="https://cdn.lordicon.com/sbrvirwc.json"
+                        trigger="hover"
+                        colors="primary:#ffffff,secondary:#ffffff"
+                        style="width:55px;height:55px">
+                </lord-icon>
+            </button>
+
+            <ul class="submenu">
+                <li>
+                    <a th:href="@{/productos}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/wjhxvnmc.json"
+                                trigger="hover"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                        Productos
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/materiasPrimas}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/jhiqqftv.json"
+                                trigger="hover"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                        Materia Prima
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/ajusteInventario}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/fwkrbvja.json"
+                                trigger="hover"
+                                state="hover-cog-4"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                        Ajustes
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- FINANZAS -->
+        <li class="has-submenu" title="Finanzas">
+            <button class="nav-btn" aria-label="Facturas" aria-expanded="false">
+                <lord-icon
+                        src="https://cdn.lordicon.com/bsdkzyjd.json"
+                        trigger="hover"
+                        state="hover-spending"
+                        colors="primary:#ffffff,secondary:#ffffff"
+                        style="width:60px;height:60px">
+                </lord-icon>
+            </button>
+
+            <ul class="submenu">
+                <li>
+                    <a th:href="@{/ventas}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/bsdkzyjd.json"
+                                trigger="hover"
+                                state="hover-spending"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:60px;height:60px">
+                        </lord-icon>
+                        Ventas
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/compras}">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/uisoczqi.json"
+                                trigger="hover"
+                                state="hover-spending"
+                                colors="primary:#ffffff,secondary:#ffffff"
+                                style="width:60px;height:60px">
+                        </lord-icon>
+                        Compras
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li title="Producción">
+            <a th:href="@{/produccion}" class="nav-btn" aria-label="Produccion">
+                <lord-icon
+                        src="https://cdn.lordicon.com/asyunleq.json"
+                        trigger="hover"
+                        state="hover-cog-4"
+                        colors="primary:#ffffff"
+                        style="width:40px;height:40px">
+                </lord-icon>
+            </a>
+        </li>
+
+        <div class="spacer"></div>
+
+        <li title="Pedidos">
+            <a th:href="@{/pedidos}" class="nav-btn" aria-label="Pedidos">
+                <img th:src="@{/images/sidebar/pedidos.png}" alt="Pedidos" width="50rem">
+            </a>
+        </li>
+
+        <!-- LOGOUT -->
+        <li title="Cerrar sesión">
+            <a th:href="@{/logout}" class="nav-btn">
+                <lord-icon
+                        src="https://cdn.lordicon.com/vfiwitrm.json"
+                        trigger="hover"
+                        colors="primary:#ffffff,secondary:#ffffff"
+                        style="width:50px;height:50px">
+                </lord-icon>
+            </a>
+        </li>
+
+    </ul>
+</nav>
+
+</html>
