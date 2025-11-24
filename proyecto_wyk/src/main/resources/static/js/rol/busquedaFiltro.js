@@ -142,12 +142,29 @@ document.addEventListener("DOMContentLoaded", () => {
       if (textoModal && !textoFila.includes(textoModal)) visible = false;
 
       // 📌 filtros por chips
+      const chipsPorColumna = {};
+
       chipsActivos.forEach(chip => {
-        const accordionBody = chip.closest(".accordion-body");
-        const colIndex = parseInt(accordionBody.querySelector(".filtro-columna").dataset.col, 10);
-        const valorCelda = fila.cells[colIndex]?.textContent.trim() || "";
-        if (chip.textContent !== valorCelda) visible = false;
+          const accordionBody = chip.closest(".accordion-body");
+          const colIndex = parseInt(accordionBody.querySelector(".filtro-columna").dataset.col, 10);
+
+          if (!chipsPorColumna[colIndex]) {
+              chipsPorColumna[colIndex] = [];
+          }
+
+          chipsPorColumna[colIndex].push(chip.textContent.trim());
       });
+
+      // aplicar filtros por columna
+      for (const colIndex in chipsPorColumna) {
+          const valorCelda = fila.cells[colIndex]?.textContent.trim() || "";
+          const valoresPermitidos = chipsPorColumna[colIndex];
+
+          // si la celda no coincide con ningún chip → ocultar
+          if (!valoresPermitidos.includes(valorCelda)) {
+              visible = false;
+          }
+      }
 
       // ✅ filtro de estado
       if (btnEstado && btnEstado.dataset.estado !== "todos") {
