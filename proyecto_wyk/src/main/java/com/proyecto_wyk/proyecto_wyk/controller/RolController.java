@@ -113,6 +113,42 @@ public class RolController {
         );
     }
 
+    @PostMapping("/updateState")
+    @ResponseBody
+    public Map<String, Object> updateState(@RequestBody Map<String, Object> body) {
+
+        try {
+            Integer id = Integer.parseInt(body.get("id").toString());
+            Integer estado = Integer.parseInt(body.get("estado").toString());
+
+            boolean nuevoEstado = (estado == 1);
+
+            Rol rol = service.buscarPorId(id);
+
+            if (rol == null) {
+                return Map.of(
+                        "success", false,
+                        "message", "El rol no existe."
+                );
+            }
+
+            rol.setEstadoRol(nuevoEstado);
+            service.guardarRol(rol);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Estado actualizado correctamente.",
+                    "estadoNuevo", nuevoEstado
+            );
+
+        } catch (Exception e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Error al actualizar el estado: " + e.getMessage()
+            );
+        }
+    }
+
     /* Forma Tradicional
     @GetMapping("/eliminar/{id}")
     public String eliminarRol(@PathVariable Integer id) {

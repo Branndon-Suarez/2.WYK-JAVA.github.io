@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (result.isConfirmed) {
-                const url = `${APP_URL}roles/updateState`;
+
+                // 🔥 AJUSTE IMPORTANTE:
+                // Garantiza que la URL se forme correctamente aunque APP_URL no termine en "/"
+                const base = APP_URL.endsWith("/") ? APP_URL : APP_URL + "/";
+
+                const url = `${base}roles/updateState`;
 
                 try {
                     const response = await fetch(url, {
@@ -34,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (!response.ok) {
-                        // Si la respuesta no es OK (ej. 404, 500), maneja el error.
                         const errorData = await response.json();
                         Swal.fire({
                             icon: 'error',
@@ -43,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         event.target.checked = !event.target.checked;
                     } else {
-                        // Si la respuesta es exitosa (código 200).
                         const data = await response.json();
                         Swal.fire({
                             icon: 'success',
@@ -53,16 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (error) {
                     console.error('Error en la petición fetch:', error);
-                    // Si la petición falla por problemas de conexión.
                     event.target.checked = !event.target.checked;
                     Swal.fire({
                         icon: 'error',
                         title: 'Error de conexión',
-                        text: 'No se pudo conectar con el servidor. Por favor, revisa la consola del navegador para más detalles.'
+                        text: 'No se pudo conectar con el servidor.'
                     });
                 }
             } else {
-                // Si el usuario cancela, revierte el estado del switch.
                 event.target.checked = !event.target.checked;
             }
         });
