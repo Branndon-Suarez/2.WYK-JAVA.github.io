@@ -8,6 +8,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.List;
+
+// IMPORTS para generar PDF con openhtmltopdf (moderno)
+import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.InputStreamResource;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 
 @Controller
 @RequestMapping("/roles")
@@ -180,5 +193,61 @@ public class RolController {
                     "message", "Error al eliminar el rol: " + e.getMessage()
             );
         }
+    }
+
+    @GetMapping("/generateReportPDF")
+    public ResponseEntity<InputStreamResource> generarPDF(@RequestParam Map<String, String> params) throws Exception {
+
+        List<Rol> listaRoles = service.listarRolesFiltrados(params);
+
+        StringBuilder html = new StringBuilder();
+        html.append("""
+        <html>
+        <head>
+        <style>
+            table { width:100%; border-collapse: collapse; }
+            th, td { border:1px solid #ccc; padding:8px; }
+            th { background-color:#f2f2f2; }
+        </style>
+        </head>
+        <body>
+        <h2>Reporte de Roles</h2>
+        <table>
+            <thead>
+                <tr><th>Rol</th><th>Clasificación</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+    """);
+
+        for (Rol r : listaRoles) {
+            html.append("<tr>")
+                    .append("<td>").append(r.getRol()).append("</td>")
+                    .append("<td>").append(r.getClasificacion()).append("</td>")
+                    .append("<td>").append(r.getEstadoRol() ? "Activo" : "Inactivo").append("</td>")
+                    .append("</tr>");
+        }
+
+        html.append("""
+        </tbody>
+        </table>
+        </body>
+        </html>
+    """);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(html.toString());
+        renderer.layout();
+        renderer.createPDF(os);
+
+        ByteArrayInputStream pdfStream = new ByteArrayInputStream(os.toByteArray());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=roles.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdfStream));
     }
 }

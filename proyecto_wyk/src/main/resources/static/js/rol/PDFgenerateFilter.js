@@ -1,85 +1,90 @@
 document.addEventListener('DOMContentLoaded', function () {
     const generatePdfBtn = document.getElementById('generatePdfBtn');
 
+    if (!generatePdfBtn) return;
+
     generatePdfBtn.addEventListener('click', () => {
-        // --- 1. Obtener valores de los filtros de texto y estado ---
-        // El filtro de búsqueda principal toma precedencia sobre el del modal
-        const searchTextPrincipal = document.getElementById('buscarRapido').value;
-        const searchTextModal = document.getElementById('buscarRapidoModal').value;
+
+        // =====================================================
+        // 1️⃣  BUSCAR TEXTO (principal o modal)
+        // =====================================================
+        const searchTextPrincipal = document.getElementById('buscarRapido')?.value || "";
+        const searchTextModal = document.getElementById('buscarRapidoModal')?.value || "";
         const finalSearchText = searchTextPrincipal || searchTextModal;
 
-        // Obtener el estado del filtro de estado
+        // =====================================================
+        // 2️⃣  FILTRO DE ESTADO (botones dinámicos)
+        // =====================================================
         let estadoFilter = null;
         const btnEstado = document.querySelector("#botonesColumnas button[data-estado]");
         if (btnEstado) {
             estadoFilter = btnEstado.dataset.estado;
         }
 
-        // --- 2. Obtener los filtros de chips (columnas de los acordeones) ---
+        // =====================================================
+        // 3️⃣  FILTROS AVANZADOS (chips activos en acordeones)
+        // =====================================================
         const chipsActivos = document.querySelectorAll(".chip.bg-primary");
         const chipFilters = {};
 
-        // Helper function to normalize strings by removing diacritics (accents)
+        // Normalizar tildes y caracteres especiales
         const normalizeString = (str) => {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         };
 
         chipsActivos.forEach(chip => {
-            const accordionBody = chip.closest(".accordion-body");
-            const colIndex = accordionBody.querySelector(".filtro-columna").dataset.col;
-            
-            // Obtener el nombre de la columna desde el encabezado de la tabla
-            const columnaNombre = document.querySelector(`#tablaRoles thead th:nth-child(${parseInt(colIndex, 10) + 1})`).textContent.trim();
 
-            // Normalize the column name to remove accents before creating the parameter
+            const accordionBody = chip.closest(".accordion-body");
+            if (!accordionBody) return;
+
+            const colElement = accordionBody.querySelector(".filtro-columna");
+            if (!colElement) return;
+
+            const colIndex = colElement.dataset.col;
+
+            // Tomar el nombre real de la columna desde la tabla
+            const th = document.querySelector(`#tablaRoles thead th:nth-child(${parseInt(colIndex, 10) + 1})`);
+            if (!th) return;
+
+            const columnaNombre = th.textContent.trim();
             const normalizedColumnaNombre = normalizeString(columnaNombre);
 
-            // Si la columna aún no está en el objeto, la creamos como un array
+            // Crear array si no existe
             if (!chipFilters[normalizedColumnaNombre]) {
                 chipFilters[normalizedColumnaNombre] = [];
             }
-            // Agregamos el texto del chip al array de esa columna
+
             chipFilters[normalizedColumnaNombre].push(chip.textContent.trim());
         });
 
-        // --- 3. Construir la cadena de consulta (query string) ---
-        let queryString = '';
-        let hasFilter = false;
+        // =====================================================
+        // 4️⃣  Construir la query final
+        // =====================================================
 
-        // Agregar el filtro de búsqueda de texto
+        let params = [];
+
         if (finalSearchText) {
-            queryString += `search=${encodeURIComponent(finalSearchText)}`;
-            hasFilter = true;
+            params.push(`search=${encodeURIComponent(finalSearchText)}`);
         }
 
-        // Agregar el filtro de estado si no es 'todos'
-        if (estadoFilter && estadoFilter !== 'todos') {
-            if (hasFilter) {
-                queryString += `&`;
-            }
-            queryString += `estado=${estadoFilter}`;
-            hasFilter = true;
+        if (estadoFilter && estadoFilter !== "todos") {
+            params.push(`estado=${estadoFilter}`);
         }
 
-        // Agregar los filtros de chips de los acordeones
+        // Agregar cada columna filtrada
         for (const columna in chipFilters) {
-            if (chipFilters[columna].length > 0) {
-                // Generamos un nombre de parámetro legible para PHP, p.ej. "filtro_CLASIFICACION"
-                const paramName = `filtro_${columna.replace(/\s+/g, '_').toUpperCase()}`;
-                const paramValue = chipFilters[columna].map(v => encodeURIComponent(v)).join(',');
-                if (hasFilter) {
-                    queryString += `&`;
-                }
-                queryString += `${paramName}=${paramValue}`;
-                hasFilter = true;
-            }
+            const paramName = `filtro_${columna.replace(/\s+/g, '_').toUpperCase()}`;
+            const paramValue = chipFilters[columna].map(v => encodeURIComponent(v)).join(',');
+            params.push(`${paramName}=${paramValue}`);
         }
 
-        // --- 4. Redireccionar con la URL final ---
-        if (hasFilter) {
-            window.location.href = `${APP_URL}roles/generateReportPDF?${queryString}`;
-        } else {
-            window.location.href = `${APP_URL}roles/generateReportPDF`;
-        }
+        // Unir parámetros
+        const queryString = params.length > 0 ? "?" + params.join("&") : "";
+
+        // =====================================================
+        // 5️⃣  ABRIR PDF (compatible con Spring Boot)
+        // =====================================================
+
+        window.open(`/roles/generateReportPDF${queryString}`, "_blank");
     });
 });
