@@ -31,7 +31,7 @@ public class RolController {
         this.service = service;
     }
 
-    @GetMapping("/home")
+    @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaRoles", service.listarRol());
         model.addAttribute("rolesExistentes", service.cantRolesExistentes());
