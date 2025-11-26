@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface IRolService {
     List<Rol> listarRol();
+    List<Rol> listarRolesFiltrados(Map<String, String> params);
+
     long cantRolesExistentes();
     long cantRolesActivos();
     long cantRolesInactivos();
@@ -16,7 +18,4 @@ public interface IRolService {
 
     Rol buscarPorId(Integer id);
     void eliminarRol(Integer id);
-
-    List<Rol> listarRolesFiltrados(Map<String, String> params);
-
 }
