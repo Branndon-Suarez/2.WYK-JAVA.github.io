@@ -70,8 +70,8 @@ public class RolController {
     /* Se usa Map<String, Object> usa:
         - String: Porque la clave de un JSON siempre tiene la clave en String.
         - Object: Porque el valor que queremos almacenar para los registros puede ser de más de un tipo de dato.*/
+    // '@RequestParam' anotación para extraer los datos URL de una solicitud http (GET/POST) y vincularlos directamente a los argumentos de un método contorlador java
     public Map<String, Object> guardarRol(
-            // '@RequestParam' anotación para extraer los datos URL de una solicitud http (GET/POST) y vincularlos directamente a los argumentos de un método contorlador java
             @RequestParam String rol,
             @RequestParam Rol.Clasificacion clasificacion
     ) {
