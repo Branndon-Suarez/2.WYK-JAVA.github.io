@@ -56,12 +56,26 @@ public class RolController {
     }
 
     @PostMapping("/guardar")
+     /* '@ResponseBody'
+        - ¿Qué es?
+         Anotación para indicar que el valor de retorno de un metodo debe ser serializado/convertido directamente y enviado como el cuerpo de la respuesta HTTP,
+         NO como una vista (que por defecto es de la carpeta template).
+        - Jackson
+         Biblioteca Java para realizar la serialización y deserialización de objetos, convirtiendo JSON a objeto y viceversa.
+        - Serialización
+         Es el proceso de convertir un objeto a un formato que se pueda almacenar o transmitir fácilmente.
+        - Cuerpo de respuesta HTTP
+         Es el contenido de la comunicación entre el cliente y el servidor que puede ser en formato JSON, HTML, etc.
+        - Es decir, permite en este caso devolver JSON que es a su vez el cuerpo de la respuesta HTTP.*/
     @ResponseBody
+    /* Se usa Map<String, Object> usa:
+        - String: Porque la clave de un JSON siempre tiene la clave en String.
+        - Object: Porque el valor que queremos almacenar para los registros puede ser de más de un tipo de dato.*/
+    // '@RequestParam' anotación para extraer los datos URL de una solicitud http (GET/POST) y vincularlos directamente a los argumentos de un método contorlador java
     public Map<String, Object> guardarRol(
             @RequestParam String rol,
             @RequestParam Rol.Clasificacion clasificacion
     ) {
-
         // Construimos un objeto para evaluar validaciones
         Rol nuevo = new Rol();
         nuevo.setRol(rol);
@@ -86,7 +100,7 @@ public class RolController {
         }
 
         service.guardarRol(nuevo);
-
+        // Map convertido a JSON con Jackson
         return Map.of("success", true, "message", "Rol creado correctamente.");
     }
 
