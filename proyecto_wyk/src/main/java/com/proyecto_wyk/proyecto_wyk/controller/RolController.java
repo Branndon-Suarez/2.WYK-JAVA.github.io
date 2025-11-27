@@ -7,12 +7,16 @@ import com.proyecto_wyk.proyecto_wyk.service.impl.RolService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 import java.util.Map;
+import java.util.Set;
 import java.util.List;
 
-// IMPORTS para generar PDF con openhtmltopdf (moderno)
 import org.xhtmlrenderer.pdf.ITextRenderer;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +25,19 @@ import org.springframework.core.io.InputStreamResource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-
 @Controller
 @RequestMapping("/roles")
 public class RolController {
+
     public final RolService service;
+
+    // ✔ Validador para activar las @Pattern, @NotBlank del modelo
+    private final Validator validator;
 
     public RolController(RolService service) {
         this.service = service;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        this.validator = factory.getValidator();
     }
 
     @GetMapping
@@ -46,48 +55,38 @@ public class RolController {
         return "rol/formGuardar";
     }
 
-    /* Forma tradicional
     @PostMapping("/guardar")
-    public String guardarRol(@ModelAttribute Rol rol) {
-        service.guardarRol(rol);
-        return "redirect:/roles/home";
-    }*/
-
-    // Forma para devolver JSON y hacer AJAX
-    @PostMapping("/guardar")
-    /* '@ResponseBody'
-        - ¿Qué es?
-         Anotación para indicar que el valor de retorno de un metodo debe ser serializado/convertido directamente y enviado como el cuerpo de la respuesta HTTP,
-         NO como una vista (que por defecto es de la carpeta template).
-        - Jackson
-         Biblioteca Java para realizar la serialización y deserialización de objetos, convirtiendo JSON a objeto y viceversa.
-        - Serialización
-         Es el proceso de convertir un objeto a un formato que se pueda almacenar o transmitir fácilmente.
-        - Cuerpo de respuesta HTTP
-         Es el contenido de la comunicación entre el cliente y el servidor que puede ser en formato JSON, HTML, etc.
-        - Es decir, permite en este caso devolver JSON que es a su vez el cuerpo de la respuesta HTTP.*/
     @ResponseBody
-    /* Se usa Map<String, Object> usa:
-        - String: Porque la clave de un JSON siempre tiene la clave en String.
-        - Object: Porque el valor que queremos almacenar para los registros puede ser de más de un tipo de dato.*/
-    // '@RequestParam' anotación para extraer los datos URL de una solicitud http (GET/POST) y vincularlos directamente a los argumentos de un método contorlador java
     public Map<String, Object> guardarRol(
             @RequestParam String rol,
             @RequestParam Rol.Clasificacion clasificacion
     ) {
+
+        // Construimos un objeto para evaluar validaciones
         Rol nuevo = new Rol();
         nuevo.setRol(rol);
         nuevo.setClasificacion(clasificacion);
         nuevo.setEstadoRol(true);
 
-        // Map convertido a JSON con Jackson
+        // ✔ Ejecutar validación automática usando las anotaciones de Rol.java
+        Set<ConstraintViolation<Rol>> errores = validator.validate(nuevo);
+
+        if (!errores.isEmpty()) {
+            // Retorna el primer mensaje de error de la entidad
+            String mensaje = errores.iterator().next().getMessage();
+
+            return Map.of(
+                    "success", false,
+                    "message", mensaje
+            );
+        }
+
         if (service.existeRol(rol)) {
             return Map.of("success", false, "message", "El rol ya existe.");
         }
 
         service.guardarRol(nuevo);
 
-        // Map convertido a JSON con Jackson
         return Map.of("success", true, "message", "Rol creado correctamente.");
     }
 
@@ -98,12 +97,6 @@ public class RolController {
         return "rol/formActualizar";
     }
 
-    /*Forma tradicional
-    @PostMapping("/actualizar")
-    public String actualizarRol(@ModelAttribute Rol rol) {
-        service.guardarRol(rol);
-        return "redirect:/roles/home";
-    }*/
     @PostMapping("/actualizar")
     @ResponseBody
     public Map<String, Object> actualizarRol(
@@ -112,7 +105,7 @@ public class RolController {
             @RequestParam Rol.Clasificacion clasificacion,
             @RequestParam boolean estadoRol
     ) {
-        // Buscar si el rol existe
+
         Rol actual = service.buscarPorId(idRol);
 
         if (actual == null) {
@@ -122,18 +115,25 @@ public class RolController {
             );
         }
 
-        // Validar si el nuevo nombre ya existe (y no es el mismo rol)
+        // Aplicar cambios para validar
+        actual.setRol(rol);
+        actual.setClasificacion(clasificacion);
+        actual.setEstadoRol(estadoRol);
+
+        // ✔ Ejecutar validación automática
+        Set<ConstraintViolation<Rol>> errores = validator.validate(actual);
+
+        if (!errores.isEmpty()) {
+            String mensaje = errores.iterator().next().getMessage();
+            return Map.of("success", false, "message", mensaje);
+        }
+
         if (service.existeRol(rol) && !actual.getRol().equalsIgnoreCase(rol)) {
             return Map.of(
                     "success", false,
                     "message", "Ya existe un rol con ese nombre."
             );
         }
-
-        // Actualizar valores
-        actual.setRol(rol);
-        actual.setClasificacion(clasificacion);
-        actual.setEstadoRol(estadoRol);
 
         service.guardarRol(actual);
 
@@ -146,7 +146,6 @@ public class RolController {
     @PostMapping("/updateState")
     @ResponseBody
     public Map<String, Object> updateState(@RequestBody Map<String, Object> body) {
-
         try {
             Integer id = Integer.parseInt(body.get("id").toString());
             Integer estado = Integer.parseInt(body.get("estado").toString());
@@ -179,16 +178,9 @@ public class RolController {
         }
     }
 
-    /* Forma Tradicional
-    @GetMapping("/eliminar/{id}")
-    public String eliminarRol(@PathVariable Integer id) {
-        service.eliminarRol(id);
-        return "redirect:/roles/home";
-    }*/
     @PostMapping("/delete")
     @ResponseBody
     public Map<String, Object> eliminarRol(@RequestParam Integer id) {
-
         try {
             service.eliminarRol(id);
 
