@@ -1,8 +1,10 @@
 document.getElementById("create-rol-form").addEventListener("submit", function(e) {
     e.preventDefault(); // Evita el envío normal
 
-    const form = this;
-    const formData = new FormData(form);
+    const data = {
+        rol: document.getElementById("rol").value,
+        clasificacion: document.getElementById("clasificacion").value
+    };
 
     Swal.fire({
         title: "¿Crear rol?",
@@ -12,14 +14,20 @@ document.getElementById("create-rol-form").addEventListener("submit", function(e
         confirmButtonText: "Sí, crear",
         cancelButtonText: "Cancelar"
     }).then((result) => {
-
         if (result.isConfirmed) {
-
             fetch(URL_GUARDAR, {
                 method: "POST",
-                body: formData
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
             })
-            .then(res => res.json())
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('Error en la conexión con el servidor');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     Swal.fire({

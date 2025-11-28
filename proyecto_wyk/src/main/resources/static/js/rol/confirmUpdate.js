@@ -13,11 +13,19 @@ document.getElementById('update-rol-form').addEventListener('submit', function (
     }).then((result) => {
         if (result.isConfirmed) {
 
-            const formData = new FormData(document.getElementById('update-rol-form'));
+            const data = {
+                idRol: document.getElementById("idRol").value,
+                rol: document.getElementById("rol").value,
+                clasificacion: document.getElementById("clasificacion").value,
+                estadoRol: document.getElementById("estadoRol").value === "true"
+            };
 
             fetch(URL_UPDATE, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
             })
             .then(response => {
                 if (!response.ok) {

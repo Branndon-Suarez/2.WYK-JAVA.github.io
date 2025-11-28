@@ -1,16 +1,15 @@
 package com.proyecto_wyk.proyecto_wyk.controller;
 
+import com.proyecto_wyk.proyecto_wyk.dto.rol.RolCreateDTO;
+import com.proyecto_wyk.proyecto_wyk.dto.rol.RolUpdateDTO;
 import com.proyecto_wyk.proyecto_wyk.entity.Rol;
+import jakarta.validation.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import com.proyecto_wyk.proyecto_wyk.service.impl.RolService;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +30,8 @@ public class RolController {
 
     public final RolService service;
 
-    // ✔ Validador para activar las @Pattern, @NotBlank del modelo
-    private final Validator validator;
-
     public RolController(RolService service) {
         this.service = service;
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        this.validator = factory.getValidator();
     }
 
     @GetMapping
@@ -73,35 +67,33 @@ public class RolController {
         - Object: Porque el valor que queremos almacenar para los registros puede ser de más de un tipo de dato.*/
     // '@RequestParam' anotación para extraer los datos URL de una solicitud http (GET/POST) y vincularlos directamente a los argumentos de un método contorlador java
     public Map<String, Object> guardarRol(
-            @RequestParam String rol,
-            @RequestParam Rol.Clasificacion clasificacion
+            @Valid @RequestBody RolCreateDTO dto,
+            BindingResult result
     ) {
-        // Construimos un objeto para evaluar validaciones
-        Rol nuevo = new Rol();
-        nuevo.setRol(rol);
-        nuevo.setClasificacion(clasificacion);
-        nuevo.setEstadoRol(true);
-
-        // ✔ Ejecutar validación automática usando las anotaciones de Rol.java
-        Set<ConstraintViolation<Rol>> errores = validator.validate(nuevo);
-
-        if (!errores.isEmpty()) {
-            // Retorna el primer mensaje de error de la entidad
-            String mensaje = errores.iterator().next().getMessage();
-
+        if (result.hasErrors()) {
+            String mensaje = result.getFieldError().getDefaultMessage();
             return Map.of(
                     "success", false,
                     "message", mensaje
             );
         }
 
-        if (service.existeRol(rol)) {
-            return Map.of("success", false, "message", "El rol ya existe.");
+        if (service.existeRol(dto.getRol())) {
+            return Map.of(
+                    "success", false,
+                    "message", "El rol ya existe.");
         }
 
-        service.guardarRol(nuevo);
-        // Map convertido a JSON con Jackson
-        return Map.of("success", true, "message", "Rol creado correctamente.");
+        Rol nuevoRol = new Rol();
+        nuevoRol.setRol(dto.getRol());
+        nuevoRol.setClasificacion(dto.getClasificacion());
+        nuevoRol.setEstadoRol(true);
+
+        service.guardarRol(nuevoRol);
+
+        return Map.of(
+                "success", true,
+                "message", "Rol creado correctamente.");
     }
 
     @GetMapping("/formAct/{id}")
@@ -114,42 +106,38 @@ public class RolController {
     @PostMapping("/actualizar")
     @ResponseBody
     public Map<String, Object> actualizarRol(
-            @RequestParam Integer idRol,
-            @RequestParam String rol,
-            @RequestParam Rol.Clasificacion clasificacion,
-            @RequestParam boolean estadoRol
+            @Valid @RequestBody RolUpdateDTO dto,
+            BindingResult result
     ) {
+        if (result.hasErrors()) {
+            String mensaje = result.getFieldError().getDefaultMessage();
+            return Map.of(
+                    "success", false,
+                    "message", mensaje
+            );
+        }
 
-        Rol actual = service.buscarPorId(idRol);
+        Rol actualRol = service.buscarPorId(dto.getIdRol());
 
-        if (actual == null) {
+        if (actualRol == null) {
             return Map.of(
                     "success", false,
                     "message", "El rol no existe."
             );
         }
 
-        // Aplicar cambios para validar
-        actual.setRol(rol);
-        actual.setClasificacion(clasificacion);
-        actual.setEstadoRol(estadoRol);
-
-        // ✔ Ejecutar validación automática
-        Set<ConstraintViolation<Rol>> errores = validator.validate(actual);
-
-        if (!errores.isEmpty()) {
-            String mensaje = errores.iterator().next().getMessage();
-            return Map.of("success", false, "message", mensaje);
-        }
-
-        if (service.existeRol(rol) && !actual.getRol().equalsIgnoreCase(rol)) {
+        if (service.existeRol(dto.getRol()) && !actualRol.getRol().equalsIgnoreCase(dto.getRol())) {
             return Map.of(
                     "success", false,
                     "message", "Ya existe un rol con ese nombre."
             );
         }
 
-        service.guardarRol(actual);
+        actualRol.setRol(dto.getRol());
+        actualRol.setClasificacion(dto.getClasificacion());
+        actualRol.setEstadoRol(dto.getEstadoRol());
+
+        service.guardarRol(actualRol);
 
         return Map.of(
                 "success", true,

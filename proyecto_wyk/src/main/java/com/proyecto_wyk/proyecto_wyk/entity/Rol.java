@@ -1,6 +1,8 @@
 package com.proyecto_wyk.proyecto_wyk.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
@@ -10,15 +12,14 @@ public class Rol {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_ROL", nullable = false, unique = true)
     private Integer idRol;
-    @Pattern(
-            regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$",
-            message = "El rol solo puede contener letras"
-    )
+
     @Column(name = "ROL", nullable = false, length = 50)
     private String rol;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "CLASIFICACION", nullable = false)
     private Clasificacion clasificacion;
+
     @Column(name = "ESTADO_ROL")
     private boolean estadoRol;
 
