@@ -10,21 +10,27 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_USUARIO", nullable = false)
-    private Integer idUsuario;
+    private Long idUsuario;
+
     @Column(name = "NUM_DOC", unique = true, nullable = false)
     private Long numDoc;
+
     @Column(name = "NOMBRE", length = 50, nullable = false)
     private String nombre;
+
     @Column(name = "PASSWORD_USUARIO", length = 150, nullable = false)
     private String passwordUsuario;
+
     @Column(name = "TEL_USUARIO", nullable = false)
     private Long telUsuario;
+
     @Column(name = "EMAIL_USUARIO", length = 50, unique = true, nullable = false)
     private String emailUsuario;
+
     @Column(name = "FECHA_REGISTRO", nullable = false)
     private LocalDateTime fechaRegistro;
 
-    // 1-M usuarios pertenecen a un rol y un rol pertenece a 1-M usuarios.
+    // 1-MUCHOS usuarios pertenecen a UN rol y un rol pertenece a 1-M usuarios.
     @ManyToOne
     @JoinColumn(name = "ROL_FK_USUARIO", nullable = false)
     private Rol rol;
@@ -34,10 +40,10 @@ public class Usuario {
 
     // Getters y setters
 
-    public Integer getIdUsuario() {
+    public Long getIdUsuario() {
         return idUsuario;
     }
-    public void setIdUsuario(Integer idUsuario) {
+    public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
     }
 
