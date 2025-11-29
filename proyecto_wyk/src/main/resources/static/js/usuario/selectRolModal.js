@@ -17,7 +17,8 @@ if (modalRoles) {
 // Cargar roles desde el servidor
 async function cargarRoles() {
     try {
-        const url = APP_URL + 'roles/getRolesAjax';
+        // Aquí usamos el método del controlador Rol para listar los roles en el modal.
+        const url = APP_URL + 'roles/listarRolesModal';
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error('Error al cargar los roles');
 
@@ -47,14 +48,15 @@ function renderizarRoles() {
     rolesData.forEach(rol => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${rol.ID_ROL}</td>
-            <td>${rol.ROL}</td>
-            <td>${rol.CLASIFICACION}</td>
+            <td>${rol.idRol}</td>
+            <td>${rol.rol}</td>
+            <td>${rol.clasificacion}</td>
             <td>
                 <button type="button" class="btn btn-success btn-sm btn-select-rol"
-                        data-id="${rol.ID_ROL}"
-                        data-nombre="${rol.ROL}"
-                        data-bs-dismiss="modal">Seleccionar</button>
+                        data-id="${rol.idRol}"
+                        data-nombre="${rol.rol}"
+                        data-bs-dismiss="modal">Seleccionar
+                </button>
             </td>
         `;
         tablaRolesModalBody.appendChild(tr);

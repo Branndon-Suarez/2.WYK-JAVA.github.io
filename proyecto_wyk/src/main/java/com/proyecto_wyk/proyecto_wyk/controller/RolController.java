@@ -43,6 +43,25 @@ public class RolController {
         return "rol/dashboardRol";
     }
 
+    // Esto es para listar los roles en otras interfaces en forma de tabla modal en formularios de crear y actualizar
+    @GetMapping("/listarRolesModal")
+    @ResponseBody
+    public Map<String, Object> listarRolesModal() {
+        try {
+            List<Rol> listarRol = service.listarRol();
+
+            return Map.of(
+                    "success", true,
+                    "data", listarRol
+            );
+        } catch (Exception e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Error al listar los roles para el modal: " + e.getMessage()
+            );
+        }
+    }
+
     @GetMapping("/formGuardar")
     public String mostrarFormGuardar(Model model) {
         model.addAttribute("formGuardarRol", new Rol());

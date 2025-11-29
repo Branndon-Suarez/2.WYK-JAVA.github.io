@@ -49,7 +49,8 @@ public class UsuarioUpdateDTO {
     @NotBlank(message = "El correo es obligatorio.")
     private String emailUsuario;
 
-    @NotEmpty(message = "Debe seleccionar mínimo un rol")
+    @NotNull(message = "Debe seleccionar un rol.")
+    @Min(value = 1, message = "El rol seleccionado no es válido.")
     private Integer rolId;
 
     @NotNull(message = "Debe seleccionar el estado.")

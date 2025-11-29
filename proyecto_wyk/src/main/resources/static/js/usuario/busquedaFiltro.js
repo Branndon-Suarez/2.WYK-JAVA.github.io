@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const filtroDiaCompleto = document.getElementById("filtroDiaCompleto");
 
       for (const colIndex in rangosActivos) {
-        const celdaValor = fila.cells[colIndex]?.textContent.trim() || "";
+        const celdaValor = fila.cells[colIndex]?.querySelector(".fecha-completa")?.textContent.trim() || "";
         const filtro = rangosActivos[colIndex];
 
         if (colIndex == numDocIndex) {

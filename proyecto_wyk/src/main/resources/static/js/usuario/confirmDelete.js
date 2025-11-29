@@ -1,48 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
     const deleteButtons = document.querySelectorAll('.delete-usuario');
+
     deleteButtons.forEach(button => {
         button.addEventListener('click', async (event) => {
-            const targetButton = event.target.closest('.delete-usuario');
-            const usuarioId = targetButton.dataset.id;
-            
+
+            const target = event.target.closest('.delete-usuario');
+            const idUsuario = target.dataset.id;
+
+            // Confirmación
             const result = await Swal.fire({
                 title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
+                text: "No podrás revertir esta acción.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, ¡eliminar!',
+                confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar'
             });
 
-            if (result.isConfirmed) {
-                const url = `${APP_URL}usuarios/delete`;
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            id: usuarioId
-                        })
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch('/usuarios/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `id=${idUsuario}`
+                });
+
+                const data = await response.json();
+
+                // Si está relacionado
+                if (data.code === "FK_CONSTRAINT") {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'No se puede eliminar',
+                        text: "Este usuario está siendo usado en otros registros."
                     });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        Swal.fire('Error', data.error || 'No se pudo eliminar el usuario porque esta conectado con otro(s) registros.', 'error');
-                    } else {
-                        Swal.fire('¡Eliminado!', data.message, 'success')
-                            .then(() => {
-                                window.location.reload();
-                            });
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire('Error de Conexión', 'No se pudo conectar con el servidor.', 'error');
                 }
+
+                // Error general
+                if (!data.success) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
+                }
+
+                // Eliminado
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminado',
+                    text: data.message
+                }).then(() => location.reload());
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: "No se pudo contactar al servidor."
+                });
             }
         });
     });

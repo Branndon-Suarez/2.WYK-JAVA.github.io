@@ -1,11 +1,9 @@
 document.getElementById('update-usuario-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const form = this;
-
     Swal.fire({
         title: '¿Estás seguro?',
-        text: 'Se actualizarán los datos de este usuario.',
+        text: 'Se actualizarán los datos del usuario.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -14,15 +12,28 @@ document.getElementById('update-usuario-form').addEventListener('submit', functi
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            const formData = new FormData(form);
 
-            fetch(APP_URL + 'usuarios/update', {
+            const data = {
+                idUsuario: document.getElementById("idUsuario").value,
+                numDoc: document.getElementById("numDoc").value,
+                nombre: document.getElementById("nombre").value,
+                passwordUsuario: document.getElementById("passwordUsuario").value,
+                telUsuario: document.getElementById("telUsuario").value,
+                emailUsuario: document.getElementById("emailUsuario").value,
+                rolId: parseInt(document.getElementById("rol_fk").value),
+                estadoUsuario: document.getElementById("estadoUsuario").value === "true"
+            };
+
+            fetch(URL_UPDATE, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('La respuesta de la red no fue exitosa');
+                    throw new Error('Error en la conexión con el servidor');
                 }
                 return response.json();
             })
@@ -30,11 +41,12 @@ document.getElementById('update-usuario-form').addEventListener('submit', functi
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Éxito!',
+                        title: '¡Actualizado!',
                         text: data.message
                     }).then(() => {
-                        window.location.href = APP_URL + 'usuarios';
+                        window.location.href = URL_REDIRECT;
                     });
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -47,7 +59,7 @@ document.getElementById('update-usuario-form').addEventListener('submit', functi
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
-                    text: 'No se pudo contactar al servidor: ' + error.message
+                    text: error.message
                 });
             });
         }

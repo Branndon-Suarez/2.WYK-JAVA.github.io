@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Usuario</title>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-usuario-form" class="formulario" method="POST">
+        <h1>Actualizar Rol</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idUsuario" name="idUsuario" th:value="${formActUsuario.idUsuario}">
+
+            <div class="campo">
+                <label for="numDoc">N° documento</label>
+                <div class="contenedor-input">
+                    <input type="number" id="numDoc" name="numDoc" th:value="${formActUsuario.numDoc}" placeholder="Número documento" required>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="nombre">Nombre</label>
+                <div class="contenedor-input">
+                    <input type="text" id="nombre" name="nombre" th:value="${formActUsuario.nombre}" placeholder="Nombre" required>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="passwordUsuario">Contraseña</label>
+                <div class="contenedor-input">
+                    <input type="password" id="passwordUsuario" name="passwordUsuario" placeholder="Será la misma si no se actualiza">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="telUsuario">Teléfono</label>
+                <div class="contenedor-input">
+                    <input type="tel" id="telUsuario" name="telUsuario" th:value="${formActUsuario.telUsuario}" placeholder="Teléfono" required>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="emailUsuario">Email</label>
+                <div class="contenedor-input">
+                    <input type="email" id="emailUsuario" name="emailUsuario" th:value="${formActUsuario.emailUsuario}" placeholder="Email" required>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="rol_fk">Rol</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe" id="select-rol-btn" data-bs-toggle="modal" data-bs-target="#modalRoles">
+                        <i data-feather="search"></i>
+                    </button>
+                    <!--Muestro con th:value el nombre del rol correspondiente al registro del usuario-->
+                    <input type="text" id="rol_display" class="form-control" th:value="${formActUsuario.rol.rol}" placeholder="Selecciona un rol" readonly required>
+                    <!--Pero almaceno es id rol correspondiente al registro del usuario-->
+                    <input type="hidden" id="rol_fk" name="rol_fk" th:value="${formActUsuario.rol.idRol}">
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoUsuario">Estado</label>
+                <div class="contenedor-input">
+                    <select id="estadoUsuario" name="estadoUsuario" required>
+                        <option value="true" th:selected="${formActUsuario.estadoUsuario}">✓ Activo</option>
+                        <option value="false" th:selected="${!formActUsuario.estadoUsuario}">✗ Inactivo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Usuario
+        </button>
+    </form>
+</main>
+
+<div class="modal fade" id="modalRoles" tabindex="-1" aria-labelledby="modalRolesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRolesLabel">Seleccionar Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tablaRolesModal">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rol</th>
+                            <th>Clasificación</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const URL_UPDATE = /*[[@{/usuarios/actualizar}]]*/ "/usuarios/actualizar";
+    const URL_REDIRECT = /*[[@{/usuarios}]]*/ "/usuarios";
+    const APP_URL = /*[[@{/}]]*/ "/";
+</script>
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script th:src="@{/js/usuario/usuario.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+<script th:src="@{/js/usuario/confirmUpdate.js}"></script>
+<script th:src="@{/js/usuario/selectRolModal.js}"></script>
+
+</body>
+</html>

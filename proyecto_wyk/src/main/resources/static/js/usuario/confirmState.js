@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (result.isConfirmed) {
-                const url = `${APP_URL}usuarios/updateState`;
+                const base = APP_URL.endsWith("/") ? APP_URL : APP_URL + "/";
+                const url = `${base}usuarios/updateState`;
 
                 try {
                     const response = await fetch(url, {
@@ -34,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (!response.ok) {
-                        // Si la respuesta no es OK (ej. 404, 500), maneja el error.
                         const errorData = await response.json();
                         Swal.fire({
                             icon: 'error',
@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         event.target.checked = !event.target.checked;
                     } else {
-                        // Si la respuesta es exitosa (código 200).
                         const data = await response.json();
                         Swal.fire({
                             icon: 'success',

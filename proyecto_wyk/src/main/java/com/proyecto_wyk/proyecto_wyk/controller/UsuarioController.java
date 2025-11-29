@@ -26,9 +26,6 @@ public class UsuarioController {
         this.rolService = rolService;
     }
 
-    // ================================
-    // 🔵 DASHBOARD
-    // ================================
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaUsuarios", usuarioService.listarUsuario());
@@ -72,8 +69,8 @@ public class UsuarioController {
         nuevoUsuario.setPasswordUsuario(dto.getPasswordUsuario());
         nuevoUsuario.setTelUsuario(Long.valueOf(dto.getTelUsuario()));
         nuevoUsuario.setEmailUsuario(dto.getEmailUsuario());
-        nuevoUsuario.setEstadoUsuario(true);
         nuevoUsuario.setFechaRegistro(java.time.LocalDateTime.now());
+        nuevoUsuario.setEstadoUsuario(true);
 
         // --- ASIGNAR ROL CORRECTAMENTE ---
         Rol rol = rolService.buscarPorId(dto.getRolId());
@@ -138,7 +135,10 @@ public class UsuarioController {
 
         actualUsuario.setNumDoc(Long.valueOf(dto.getNumDoc()));
         actualUsuario.setNombre(dto.getNombre());
-        actualUsuario.setPasswordUsuario(dto.getPasswordUsuario());
+        // Solo actualizar contraseña si solo se pone un valor nuevo
+        if (dto.getPasswordUsuario() != null && !dto.getPasswordUsuario().isBlank()) {
+            actualUsuario.setPasswordUsuario(dto.getPasswordUsuario());
+        }
         actualUsuario.setTelUsuario(Long.valueOf(dto.getTelUsuario()));
         actualUsuario.setEmailUsuario(dto.getEmailUsuario());
         actualUsuario.setEstadoUsuario(dto.isEstadoUsuario());
@@ -159,7 +159,7 @@ public class UsuarioController {
                 "message", "Usuario actualizado correctamente."
         );
     }
-    
+
     @PostMapping("/updateState")
     @ResponseBody
     public Map<String, Object> updateState(@RequestBody Map<String, Object> body) {
