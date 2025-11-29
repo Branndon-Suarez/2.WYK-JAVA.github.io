@@ -17,5 +17,5 @@ public interface IUsuarioService {
     boolean existeUsuario(Long numDoc);
 
     Usuario buscarPorID(Long id);
-    void eliminarRol(Long id);
+    void eliminarUsuario(Long id);
 }

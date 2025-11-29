@@ -199,7 +199,7 @@ public class UsuarioController {
     @ResponseBody
     public Map<String, Object> eliminarUsuario(@RequestParam Long id) {
         try {
-            usuarioService.eliminarRol(id);
+            usuarioService.eliminarUsuario(id);
 
             return Map.of(
                     "success", true,

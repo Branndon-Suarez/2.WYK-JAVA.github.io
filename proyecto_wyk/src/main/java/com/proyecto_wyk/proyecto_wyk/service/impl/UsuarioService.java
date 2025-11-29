@@ -139,7 +139,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public void eliminarRol(Long id) {
+    public void eliminarUsuario(Long id) {
         repository.deleteById(id);
     }
 }
