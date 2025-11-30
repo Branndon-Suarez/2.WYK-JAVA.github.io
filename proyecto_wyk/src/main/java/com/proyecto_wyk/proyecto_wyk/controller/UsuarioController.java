@@ -7,12 +7,20 @@ import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
 import com.proyecto_wyk.proyecto_wyk.service.impl.RolService;
 import com.proyecto_wyk.proyecto_wyk.service.impl.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -219,5 +227,77 @@ public class UsuarioController {
                     "message", "Error al eliminar usuario: " + e.getMessage()
             );
         }
+    }
+
+    @GetMapping("/generateReportPDF")
+    public ResponseEntity<InputStreamResource> generarPDF(@RequestParam Map<String, String> params) throws Exception {
+
+        List<Usuario> listaUsuarios = usuarioService.listarUsuariosFiltrados(params);
+
+        StringBuilder html = new StringBuilder();
+        html.append("""
+                    <html>
+                    <head>
+                    <style>
+                        @page {
+                            size: A4 landscape;
+                            margin: 20mm;
+                        }
+                        table { width:100%; border-collapse: collapse; }
+                        th, td { border:1px solid #ccc; padding:8px; }
+                        th { background-color:#f2f2f2; }
+                    </style>
+                    </head>
+                    <body>
+                    <h2>Reporte de Usuarios</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Número documento</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Fecha Registro</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                """);
+
+        for (Usuario u : listaUsuarios) {
+            html.append("<tr>")
+                    .append("<td>").append(u.getNumDoc()).append("</td>")
+                    .append("<td>").append(u.getNombre()).append("</td>")
+                    .append("<td>").append(u.getTelUsuario()).append("</td>")
+                    .append("<td>").append(u.getEmailUsuario()).append("</td>")
+                    .append("<td>").append(u.getFechaRegistro()).append("</td>")
+                    .append("<td>").append(u.getRol().getRol()).append("</td>")
+                    .append("<td>").append(u.isEstadoUsuario() ? "Activo" : "Inactivo").append("</td>")
+                    .append("</tr>");
+        }
+
+        html.append("""
+                    </tbody>
+                    </table>
+                    </body>
+                    </html>
+                """);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(html.toString());
+        renderer.layout();
+        renderer.createPDF(os);
+
+        ByteArrayInputStream pdfStream = new ByteArrayInputStream(os.toByteArray());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=usuarios.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdfStream));
     }
 }
