@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RolCreateDTO {
-    @NotBlank(message = "El nombre del rol debe ser obligatorio.")
+    @NotBlank(message = "El nombre del rol debe ser *OBLIGATORIO*.")
     @Size(
             min = 3, max = 50,
             message = "El rol debe tener entre 3 y 50 carácteres."
