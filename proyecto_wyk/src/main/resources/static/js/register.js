@@ -1,29 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Lógica de Estilos de Formulario ---
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.querySelectorAll('.form-control').forEach(input => {
+
+            // Efecto al ganar foco
             input.addEventListener('focus', function () {
                 const icon = this.parentNode.querySelector('lord-icon');
                 if (icon) {
-                    icon.style.color = '#3b82f6';
+                    // Cambia el color del ícono al enfocar
+                    // Debes adaptar esta línea para que coincida con la librería lord-icon si es necesario
+                    icon.style.opacity = 1;
                 }
                 this.classList.add('focused');
             });
 
+            // Efecto al perder foco
             input.addEventListener('blur', function () {
                 if (!this.value) {
                     const icon = this.parentNode.querySelector('lord-icon');
                     if (icon) {
-                        icon.style.color = '#94a3b8';
+                        // Vuelve el ícono a su estado normal si está vacío
+                        icon.style.opacity = 0.7;
                     }
                 }
                 this.classList.remove('focused');
             });
 
+            // Validación al escribir (principalmente para el email)
             input.addEventListener('input', function () {
                 this.classList.remove('success', 'error');
 
                 if (this.type === 'email' && this.value.length > 0) {
+                    // Expresión regular básica para validar el formato de email
                     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
                     if (isValid) {
                         this.classList.add('success');
@@ -31,41 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         this.classList.add('error');
                     }
                 }
+
+                // Limpiar validación si se borra el campo
+                if (this.value.length === 0) {
+                    this.classList.remove('success', 'error');
+                }
             });
-        });
-    }
-
-    function showLogin() {
-        const loginContainer = document.querySelector('.container-login');
-        const forgotContainer = document.getElementById('forgotForm');
-        if (loginContainer && forgotContainer) {
-            loginContainer.classList.add('active');
-            forgotContainer.classList.remove('active');
-        }
-    }
-
-    function showForgotPassword() {
-        const loginContainer = document.querySelector('.container-login');
-        const forgotContainer = document.getElementById('forgotForm');
-        if (loginContainer && forgotContainer) {
-            loginContainer.classList.remove('active');
-            forgotContainer.classList.add('active');
-        }
-    }
-
-    const forgotFormSubmit = document.getElementById('forgotFormSubmit');
-    if (forgotFormSubmit) {
-        forgotFormSubmit.addEventListener('submit', function (e) {
-            e.preventDefault();
-            this.submit();
-        });
-    }
-
-    const showLoginBtn = document.querySelector('.form-switch a');
-    if (showLoginBtn) {
-        showLoginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showLogin();
         });
     }
 });

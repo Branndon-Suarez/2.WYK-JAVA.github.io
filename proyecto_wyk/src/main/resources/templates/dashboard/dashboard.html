@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headDashboardInicio :: headDashboardInicio}"></head>
+
+<body>
+<div class="app" data-theme="light">
+    <nav th:replace="~{layout/sidebar :: sidebar}"></nav>
+
+    <div class="tasks-panel" id="tasksPanel">
+        <div class="tasks-header">
+            <h2 class="tasks-title">Mis Tareas</h2>
+            <button class="close-tasks-btn" id="closeTasksBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+<!--        <div id="tareas-content" class="tasks-content-wrapper">-->
+<!--            <div th:replace="~{tarea/viewTareaEmpleado :: viewTareaEmpleado}"></div>-->
+<!--        </div>-->
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <div class="s">Buenos días,
+                    <span class="n" th:text="${userName}">[Nombre Usuario]</span>
+                </div>
+                <div class="subtitle">Ten un buen día en el trabajo</div>
+            </div>
+            <div class="header-actions">
+                <button class="action-btn" id="themeToggle" title="Cambiar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="action-btn" id="notificationsBtn" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar" th:text="${userInitials}">JD</div>
+                    <span th:text="${userName}">[Nombre Usuario]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="profile-card">
+                <div class="profile-image-container">
+                    <div class="profile-image" id="profileImage" th:text="${userInitials}">JD
+                        <div class="online-indicator"></div>
+                    </div>
+                    <button class="change-photo-btn" id="changePhotoBtn" title="Cambiar foto">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+
+                <div class="profile-name" th:text="${userName}">[Nombre Usuario]</div>
+                <div class="profile-company" th:text="${rol}">[Rol Usuario]</div>
+
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-label">
+                            <i class="fas fa-phone"></i> Teléfono
+                        </span>
+                        <span class="contact-value" th:text="'000 ' + ${userTel}">+57 [Teléfono]</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </span>
+                        <span class="contact-value" th:text="${userEmail}">[Email]</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <div class="notifications-panel" id="notificationsPanel">
+    </div>
+
+    <div class="modal" id="addTaskModal">
+    </div>
+
+    <div class="modal" id="changePhotoModal">
+    </div>
+
+    <footer style="text-align:center; color:#64748b; font-size:13px; margin-top: 18px;">
+        © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> PANADERIA WYK-PROYECTO SENA
+    </footer>
+</div>
+
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script>
+    // Reemplazo de las variables de sesión PHP por variables JS inyectadas por Thymeleaf
+    // NOTA: 'APP_URL' probablemente debe ser manejado por un controlador de Spring y no es común en Thymeleaf/Spring Boot.
+
+    // Variables de mensajes flash:
+    // Debes pasar 'successMessage' y 'errorMessage' desde tu controlador Spring al modelo.
+    const successMessage = '[[${successMessage}]]';
+    const errorMessage = '[[${errorMessage}]]';
+
+    // Puedes pasar variables de entorno (si es necesario) desde tu configuración de Spring.
+    // const APP_URL = '[[${appUrl}]]';
+</script>
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script th:src="@{/js/toads-sweetalert2.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha256-Lye89HGy1p3XhJT24hcvsoRw64Q4IOL5a7hdOflhjTA="
+        crossorigin="anonymous"></script>
+</body>
+</html>

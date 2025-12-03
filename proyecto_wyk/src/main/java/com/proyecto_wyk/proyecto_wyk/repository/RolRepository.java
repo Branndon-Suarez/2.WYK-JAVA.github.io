@@ -1,8 +1,11 @@
 package com.proyecto_wyk.proyecto_wyk.repository;
 
+import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
 import org.springframework.stereotype.Repository;
 import com.proyecto_wyk.proyecto_wyk.entity.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Integer> {
@@ -20,4 +23,6 @@ public interface RolRepository extends JpaRepository<Rol, Integer> {
         - Devuelve true/false si existe al menos un registro con ese valor. - Sintaxis: existsByCampo(...)
    Estos son los principales, pero hay más.*/
     boolean existsByRol(String rol);
+    Optional<Rol> findByRol(String rol);
+    Optional<Rol> findByClasificacion(Rol.Clasificacion clasificacion);
 }
