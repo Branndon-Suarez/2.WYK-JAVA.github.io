@@ -104,4 +104,6 @@ public class TareaCreateDTO {
     public void setIdUsuarioAsignado(Integer idUsuarioAsignado) {
         this.idUsuarioAsignado = idUsuarioAsignado;
     }
+
+
 }
