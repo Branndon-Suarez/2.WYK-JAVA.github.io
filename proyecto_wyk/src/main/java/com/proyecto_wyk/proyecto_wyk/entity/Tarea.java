@@ -2,8 +2,6 @@ package com.proyecto_wyk.proyecto_wyk.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "TAREA")
 public class Tarea {
