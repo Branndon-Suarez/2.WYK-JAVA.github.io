@@ -3,10 +3,11 @@ package com.proyecto_wyk.proyecto_wyk.service.impl;
 import com.proyecto_wyk.proyecto_wyk.entity.Tarea;
 import com.proyecto_wyk.proyecto_wyk.repository.TareaRepository;
 import com.proyecto_wyk.proyecto_wyk.service.ITareaService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
+@Service
 public class TareaService implements ITareaService {
     public final TareaRepository repository;
     public TareaService(TareaRepository repository) {
