@@ -62,9 +62,14 @@ public class UsuarioController {
             BindingResult result
     ) {
         if (result.hasErrors()) {
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank")) // 1. Busca si existe un error de @NotBlank para darle prioridad
+                    .findFirst()
+                    .orElse(result.getFieldError())// 2. Si no es @NotBlank, toma el primer error que encuentre
+                    .getDefaultMessage();
             return Map.of(
                     "success", false,
-                    "message", result.getFieldError().getDefaultMessage()
+                    "message", mensaje
             );
         }
 
@@ -122,7 +127,11 @@ public class UsuarioController {
             BindingResult result
     ) {
         if (result.hasErrors()) {
-            String mensaje = result.getFieldError().getDefaultMessage();
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank"))
+                    .findFirst()
+                    .orElse(result.getFieldError())
+                    .getDefaultMessage();
             return Map.of(
                     "success", false,
                     "message", mensaje

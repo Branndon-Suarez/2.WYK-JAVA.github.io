@@ -24,6 +24,9 @@ public class CustomUserDetails implements UserDetails {
                 new SimpleGrantedAuthority(usuario.getRol().getRol().toUpperCase())
         );
     }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
     @Override
     public String getPassword() {

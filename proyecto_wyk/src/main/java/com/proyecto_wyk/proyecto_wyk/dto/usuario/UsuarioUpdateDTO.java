@@ -5,10 +5,10 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 public class UsuarioUpdateDTO {
-    @NotNull(message = "El ID del usuario es obligatorio.")
+    @NotNull(message = "El ID del usuario es *OBLIGATORIO*.")
     private Long idUsuario;
 
-    @NotBlank(message = "El número de documento es obligatorio.")
+    @NotBlank(message = "El número de documento es *OBLIGATORIO*.")
     @Size(
             min = 7, max = 11,
             message = "El número de documento debe tener entre 7 y 11 dígitos. "
@@ -19,7 +19,7 @@ public class UsuarioUpdateDTO {
     )
     private String numDoc;
 
-    @NotBlank(message = "El nombre es obligatorio.")
+    @NotBlank(message = "El nombre es *OBLIGATORIO*.")
     @Size(
             min = 3, max = 50,
             message = "El nombre debe de tener entre 3 y 50 carácteres."
@@ -34,7 +34,7 @@ public class UsuarioUpdateDTO {
     * si no se pone un password nuevo.*/
     private String passwordUsuario;
 
-    @NotBlank(message = "El número de teléfono es obligatorio.")
+    @NotBlank(message = "El número de teléfono es *OBLIGATORIO*.")
     @Size(
             min = 10, max = 10,
             message = "El número de teléfono debe tener 10 dígitos."
@@ -46,7 +46,7 @@ public class UsuarioUpdateDTO {
     private String telUsuario;
 
     @Email(message = "Correo inválido.")
-    @NotBlank(message = "El correo es obligatorio.")
+    @NotBlank(message = "El correo es *OBLIGATORIO*.")
     private String emailUsuario;
 
     @NotNull(message = "Debe seleccionar un rol.")

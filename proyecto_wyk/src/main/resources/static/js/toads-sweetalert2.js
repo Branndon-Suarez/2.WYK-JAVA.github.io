@@ -1,10 +1,5 @@
-// EN static/js/toads-sweetalert2.js (CORREGIDO)
-
 // Las variables 'successMessage' y 'errorMessage' deben estar definidas
 // en el ámbito global del HTML antes de que este script se ejecute.
-
-// Ejecutamos la lógica inmediatamente después de la definición de las variables en el HTML.
-
 if (typeof Swal !== 'undefined') {
     if (successMessage) {
         Swal.fire({

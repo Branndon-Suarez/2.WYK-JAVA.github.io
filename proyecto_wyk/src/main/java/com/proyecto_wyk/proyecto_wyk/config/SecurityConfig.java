@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +42,8 @@ public class SecurityConfig {
                         .permitAll()
                         // **NO SE ESPECIFICA usernameParameter** -> Spring Security usará el campo 'username' por defecto.
                         .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error")
+                        .failureHandler(authenticationFailureHandler())
+//                        .failureUrl("/login?error")
                 )
                 .logout(logout -> logout
                         .permitAll()
@@ -48,5 +51,20 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    // BEAN: Handler para manejar errores específicos de autenticación (usuario inactivo)
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            String redirectUrl = "/login?error";
+
+            // La excepción lanzada cuando isEnabled() es false es DisabledException
+            if (exception instanceof DisabledException) {
+                redirectUrl = "/login?error=disabled";
+            }
+
+            response.sendRedirect(request.getContextPath() + redirectUrl);
+        };
     }
 }

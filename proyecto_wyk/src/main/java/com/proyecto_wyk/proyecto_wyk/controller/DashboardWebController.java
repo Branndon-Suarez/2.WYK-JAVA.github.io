@@ -1,5 +1,6 @@
 package com.proyecto_wyk.proyecto_wyk.controller;
 
+import com.proyecto_wyk.proyecto_wyk.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -16,28 +17,38 @@ public class DashboardWebController {
         // 1. Obtener la información del usuario autenticado (Principal)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // El 'username' es el email, según tu CustomUserDetails.
-        String userEmail = authentication.getName();
+        // 2. Verificar que el usuario esté autenticado y que sea de nuestro tipo CustomUserDetails
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
 
-        // 2. Puedes añadir el nombre del usuario al modelo si lo obtuvieras de la BDD.
-        // Por ahora, solo usaremos el email como marcador de posición.
-        // Si necesitas el NOMBRE_USUARIO real, tendrías que inyectar el UsuarioRepository
-        // y buscar el usuario por el email para obtener el nombre completo.
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        // ****************************************************************************
-        // NOTA: Para obtener el nombre real, necesitarías inyectar UsuarioRepository
-        // y buscar el objeto Usuario usando userEmail.
-        // Por simplicidad, usaremos el email como "nombre" por ahora, o lo dejamos vacío.
-        // Para usar el nombre real, debes inyectar:
-        // @Autowired private UsuarioRepository usuarioRepository;
-        // Usuario usuario = usuarioRepository.findByEmailUsuario(userEmail).orElse(null);
-        // model.addAttribute("userName", usuario != null ? usuario.getNombre() : userEmail);
-        // ****************************************************************************
+            // 3. Acceder al objeto Usuario subyacente
+            // (Asumiendo que CustomUserDetails tiene un método para acceder al objeto Usuario,
+            // si no, usar los getters que implementaste en CustomUserDetails)
+            // Ya que solo tienes un campo 'usuario' privado, usaremos los getters de CustomUserDetails:
 
-        // Usaremos el email como marcador hasta que implementes la inyección del repositorio:
-        model.addAttribute("userName", userEmail);
+            // Obtener los datos directamente de CustomUserDetails (o crear getters en CustomUserDetails si es necesario)
+            String nombre = userDetails.getUsuario().getNombre();
+            String email = userDetails.getUsername(); // Implementado como email en CustomUserDetails
+            String telefono = String.valueOf(userDetails.getUsuario().getTelUsuario());
+            String rol = userDetails.getAuthorities().iterator().next().getAuthority(); // El rol principal
 
-        // 3. Devolver la plantilla
-        return "dashboard/dashboard";
+            // Lógica para iniciales (ej: "John Doe" -> "JD")
+            String[] partesNombre = nombre.split(" ");
+            String iniciales = partesNombre[0].substring(0, 1) + (partesNombre.length > 1 ? partesNombre[1].substring(0, 1) : "");
+
+            // 4. Inyectar los datos en el modelo de Thymeleaf
+            model.addAttribute("userName", nombre);
+            model.addAttribute("userEmail", email);
+            model.addAttribute("userTel", telefono);
+            model.addAttribute("userRol", rol);
+            model.addAttribute("userInitials", iniciales.toUpperCase());
+
+        } else {
+            // Si no está autenticado, redirigir al login (Spring Security ya debería manejar esto)
+            return "redirect:/login";
+        }
+
+        return "dashboard/dashboard"; // El nombre de tu plantilla (asumiendo que está en templates/dashboard/dashboard.html)
     }
 }

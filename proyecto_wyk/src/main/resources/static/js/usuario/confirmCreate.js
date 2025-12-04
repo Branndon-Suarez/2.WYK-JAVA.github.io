@@ -19,11 +19,14 @@ document.getElementById("create-usuario-form").addEventListener("submit", functi
         cancelButtonText: "Cancelar"
     }).then((result) => {
         if (result.isConfirmed) {
+            const headers = {
+                "Content-Type": "application/json"
+            };
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
             fetch(URL_GUARDAR, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 body: JSON.stringify(data)
             })
             .then(response => {

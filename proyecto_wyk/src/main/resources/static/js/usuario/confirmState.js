@@ -22,12 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const base = APP_URL.endsWith("/") ? APP_URL : APP_URL + "/";
                 const url = `${base}usuarios/updateState`;
 
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                    headers[CSRF_HEADER] = CSRF_TOKEN;
+                } else {
+                    console.error("ADVERTENCIA: Variables CSRF no definidas. La petición podría fallar.");
+                }
+
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             id: usuarioId,
                             estado: nuevoEstado

@@ -11,13 +11,6 @@
                 <form th:action="@{/login}" id="login-form" class="sign-in-form" method="post" autocomplete="on">
                     <h2 class="title">Iniciar Sesión</h2>
 
-                    <div th:if="${param.error}" class="error-message">
-                        Email o contraseña incorrectos. Verifica tus credenciales.
-                    </div>
-                    <div th:if="${param.logout}" class="success-message">
-                        Sesión cerrada correctamente.
-                    </div>
-
                     <div class="input-field">
                         <lord-icon
                                 src="https://cdn.lordicon.com/fmasbomy.json"
@@ -63,38 +56,37 @@
     </div>
 </main>
 
-<script th:src="@{/js/register.js}"></script>
-<script th:src="@{/js/sweetalert2.all.min.js}"></script>
-<script th:src="@{/js/toads-sweetalert2.js}"></script>
 <script src="https://cdn.lordicon.com/lordicon.js" integrity="sha256-1C3IZn03j9193YxLyK8PoFh0a0rfXzXk5KhS3OiN53s=" crossorigin="anonymous"></script>
-
 <script th:src="@{/js/sweetalert2.all.min.js}"></script>
-<script th:src="@{/js/toads-sweetalert2.js}"></script>
 
-<script th:src="@{/js/register.js}"></script>
+<script th:inline="javascript">
+    window.successMessage = '';
+    window.errorMessage = '';
 
-<script>
-    let successMessage = '';
-    let errorMessage = '';
+    // Captura las variables inyectadas por el controlador (Solución 1)
+    const logoutSuccess = [[${logoutSuccess}]];
+    const loginError = [[${loginError}]];
 
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (urlParams.has('logout')) {
-        successMessage = 'Sesión cerrada correctamente.';
-    } else if (urlParams.has('error')) {
-        // Asignamos el mensaje al errorMessage global
-        errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.';
+    // Si el controlador pasó el indicador de logout
+    if (logoutSuccess) {
+        window.successMessage = 'Sesión cerrada correctamente.';
     }
 
-    // El resto de scripts que no son de carga de archivos (como la lógica de contenedores)
+    // Si el controlador pasó el indicador de error
+    if (loginError) {
+        if (loginError === 'disabled') {
+            window.errorMessage = 'Tu cuenta se encuentra inactiva. Contacta al administrador.';
+        } else {
+            // 'true', 'error' o cualquier otro fallo genérico
+            window.errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.';
+        }
+    }
+
+    // Inicialización del DOM (Debe ir después de la definición de mensajes, pero antes de otros scripts si es necesario)
     const sign_in_btn = document.querySelector("#sign-in-btn");
     const container = document.querySelector(".container");
 </script>
-
-<script src="https://cdn.lordicon.com/lordicon.js" integrity="sha256-1C3IZn03j9193YxLyK8PoFh0a0rfXzXk5KhS3OiN53s=" crossorigin="anonymous"></script>
-
-<script th:src="@{/js/sweetalert2.all.min.js}"></script>
 <script th:src="@{/js/toads-sweetalert2.js}"></script>
-<script th:src="@{/js/register.js}"></script>
+
 </body>
 </html>

@@ -24,11 +24,15 @@ document.getElementById('update-usuario-form').addEventListener('submit', functi
                 estadoUsuario: document.getElementById("estadoUsuario").value === "true"
             };
 
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
             fetch(URL_UPDATE, {
                 method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 body: JSON.stringify(data)
             })
             .then(response => {
