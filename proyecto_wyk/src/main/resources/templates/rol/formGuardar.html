@@ -20,7 +20,7 @@
             <div class="campo">
                 <label for="rol">Rol</label>
                 <div class="contenedor-input">
-                    <input type="text" id="rol" name="rol" required placeholder="Ingresa el rol">
+                    <input type="text" id="rol" name="rol" placeholder="Ingresa el rol">
                     <div class="resalte-input"></div>
                 </div>
             </div>
@@ -28,7 +28,7 @@
             <div class="campo">
                 <label for="clasificacion">Categoría</label>
                 <div class="contenedor-input">
-                    <select id="clasificacion" name="clasificacion" required>
+                    <select id="clasificacion" name="clasificacion">
                         <option value="">Seleccione una categoría</option>
                         <option value="EMPLEADO">EMPLEADO</option>
                         <option value="ADMINISTRADOR">ADMINISTRADOR</option>
@@ -45,14 +45,19 @@
     </form>
 </main>
 
-<script>
-    const URL_GUARDAR = /*[[@{/roles/guardar}]]*/ "/roles/guardar";
-    const URL_REDIRECT = /*[[@{/roles}]]*/ "/roles";
-</script>
+<!--NOTA: Se recomienda poner en este orden los archivos, ya que se cargan en orden. Primero las librerías externas, luego locales, luego variables y luego confirmar js-->
 <script src="https://cdn.lordicon.com/lordicon.js"></script>
 <script src="https://unpkg.com/feather-icons"></script>
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+<script th:inline="javascript">
+    const URL_GUARDAR = /*[[@{/roles/guardar}]]*/ "/roles/guardar";
+    const URL_REDIRECT = /*[[@{/roles}]]*/ "/roles";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
 <script th:src="@{/js/rol/confirmCreate.js}"></script>
 </body>
 </html>

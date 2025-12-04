@@ -15,16 +15,24 @@ document.getElementById("create-rol-form").addEventListener("submit", function(e
         cancelButtonText: "Cancelar"
     }).then((result) => {
         if (result.isConfirmed) {
+            // 1. CONFIGURACIÓN CSRF:
+            // Creamos los encabezados HTTP, incluyendo el Content-Type
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            // Añadimos el encabezado CSRF usando las variables que inyectaste en el HTML
+            // (CSRF_HEADER contiene el nombre del encabezado, ej: X-CSRF-TOKEN)
+            // (CSRF_TOKEN contiene el valor del token real)
+            headers[CSRF_HEADER] = CSRF_TOKEN;
             fetch(URL_GUARDAR, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 body: JSON.stringify(data)
             })
             .then(response => {
                 if(!response.ok) {
-                    throw new Error('Error en la conexión con el servidor');
+                    throw new Error('Error en la conexión con el servidor o token CSRF inválido.');
                 }
                 return response.json();
             })

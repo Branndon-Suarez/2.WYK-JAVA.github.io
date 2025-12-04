@@ -90,10 +90,14 @@ public class RolController {
             BindingResult result
     ) {
         if (result.hasErrors()) {
-            String mensaje = result.getFieldError().getDefaultMessage();
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank")) // 1. Busca si existe un error de @NotBlank para darle prioridad
+                    .findFirst()
+                    .orElse(result.getFieldError())// 2. Si no es @NotBlank, toma el primer error que encuentre
+                    .getDefaultMessage();
             return Map.of(
                     "success", false,
-                    "message", mensaje
+                    "message", mensaje // Muestra el mensaje del primer error
             );
         }
 
@@ -103,9 +107,20 @@ public class RolController {
                     "message", "El rol ya existe.");
         }
 
+        // Conversión de String a Enum y try catch para manejar atacante e impedir no enviar datos que no estén en el enum.
+        Rol.Clasificacion clasificacionEnum;
+        try {
+            clasificacionEnum = Rol.Clasificacion.valueOf(dto.getClasificacion());
+        } catch (IllegalArgumentException e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Clasificación no válida. Por favor, selecciona un valor de la lista."
+            );
+        }
+
         Rol nuevoRol = new Rol();
         nuevoRol.setRol(dto.getRol());
-        nuevoRol.setClasificacion(dto.getClasificacion());
+        nuevoRol.setClasificacion(clasificacionEnum);
         nuevoRol.setEstadoRol(true);
 
         service.guardarRol(nuevoRol);

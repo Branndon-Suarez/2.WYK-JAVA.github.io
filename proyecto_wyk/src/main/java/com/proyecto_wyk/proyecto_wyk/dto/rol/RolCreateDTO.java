@@ -1,10 +1,7 @@
 package com.proyecto_wyk.proyecto_wyk.dto.rol;
 
 import com.proyecto_wyk.proyecto_wyk.entity.Rol;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class RolCreateDTO {
     @NotBlank(message = "El nombre del rol debe ser *OBLIGATORIO*.")
@@ -18,8 +15,8 @@ public class RolCreateDTO {
     )
     private String rol;
 
-    @NotNull(message = "Debe seleccionar una clasificación.")
-    private Rol.Clasificacion clasificacion;
+    @NotEmpty(message = "Debe seleccionar una clasificación.")
+    private String clasificacion;
 
     // Getters y setters
     public String getRol() {
@@ -29,10 +26,10 @@ public class RolCreateDTO {
         this.rol = rol;
     }
 
-    public Rol.Clasificacion getClasificacion() {
+    public String getClasificacion() {
         return clasificacion;
     }
-    public void setClasificacion(Rol.Clasificacion clasificacion) {
+    public void setClasificacion(String clasificacion) {
         this.clasificacion = clasificacion;
     }
 }
