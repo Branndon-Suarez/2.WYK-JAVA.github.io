@@ -21,12 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!result.isConfirmed) return;
 
+            // 🔑 PASO 1 TOKEN: Crear Headers
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            };
+
+            // 🔑 PASO 2 TOKEN: Añadir CSRF Header y Token (CORRECCIÓN)
+            // Se usa typeof para verificar que la variable exista antes de usarla
+            if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                headers[CSRF_HEADER] = CSRF_TOKEN;
+            } else {
+                console.error("ADVERTENCIA: Variables CSRF no definidas. La petición podría fallar (403 Forbidden).");
+            }
+
             try {
                 const response = await fetch('/roles/delete', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
+                    headers: headers,
                     body: `id=${idRol}`
                 });
 

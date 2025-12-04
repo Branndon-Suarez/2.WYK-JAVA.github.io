@@ -59,17 +59,20 @@
 
 </main>
 
-<script>
-    const URL_UPDATE = /*[[@{/roles/actualizar}]]*/ "/roles/actualizar";
-    const URL_REDIRECT = /*[[@{/roles}]]*/ "/roles";
-</script>
-
 <script src="https://cdn.lordicon.com/lordicon.js"></script>
 <script src="https://unpkg.com/feather-icons"></script>
 
 <script th:src="@{/js/rol/rol.js}"></script>
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    const URL_UPDATE = /*[[@{/roles/actualizar}]]*/ "/roles/actualizar";
+    const URL_REDIRECT = /*[[@{/roles}]]*/ "/roles";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
 <script th:src="@{/js/rol/confirmUpdate.js}"></script>
 </body>
 </html>

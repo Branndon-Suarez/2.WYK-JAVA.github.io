@@ -144,10 +144,25 @@ public class RolController {
             BindingResult result
     ) {
         if (result.hasErrors()) {
-            String mensaje = result.getFieldError().getDefaultMessage();
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank"))
+                    .findFirst()
+                    .orElse(result.getFieldError())
+                    .getDefaultMessage();
             return Map.of(
                     "success", false,
                     "message", mensaje
+            );
+        }
+
+        // Conversión de String a Enum
+        Rol.Clasificacion clasificacionEnum;
+        try {
+            clasificacionEnum = Rol.Clasificacion.valueOf(dto.getClasificacion());
+        } catch (IllegalArgumentException e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Clasificación no válida. Por favor, selecciona un valor de la lista."
             );
         }
 
@@ -168,7 +183,7 @@ public class RolController {
         }
 
         actualRol.setRol(dto.getRol());
-        actualRol.setClasificacion(dto.getClasificacion());
+        actualRol.setClasificacion(clasificacionEnum);
         actualRol.setEstadoRol(dto.getEstadoRol());
 
         service.guardarRol(actualRol);

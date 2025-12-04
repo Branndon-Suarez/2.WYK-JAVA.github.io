@@ -208,8 +208,11 @@
     </script>
 
     <!-- VARIABLES GLOBALES -->
-    <script>
+    <script th:inline="javascript">
         const APP_URL = /*[[${@environment.getProperty('app.url')}]]*/ '';
+
+        const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+        const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
     </script>
 
     <!-- JS DEL SISTEMA -->

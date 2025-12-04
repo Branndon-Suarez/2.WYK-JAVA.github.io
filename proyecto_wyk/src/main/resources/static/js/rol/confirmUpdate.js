@@ -20,11 +20,16 @@ document.getElementById('update-rol-form').addEventListener('submit', function (
                 estadoRol: document.getElementById("estadoRol").value === "true"
             };
 
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            // Añadir el token CSRF a los headers
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
             fetch(URL_UPDATE, {
                 method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 body: JSON.stringify(data)
             })
             .then(response => {

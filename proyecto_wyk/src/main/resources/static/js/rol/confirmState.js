@@ -23,15 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 🔥 AJUSTE IMPORTANTE:
                 // Garantiza que la URL se forme correctamente aunque APP_URL no termine en "/"
                 const base = APP_URL.endsWith("/") ? APP_URL : APP_URL + "/";
-
                 const url = `${base}roles/updateState`;
+
+                // 🔑 PASO 1 TOKEN: CREAR HEADERS CON CONTENT-TYPE
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                // 🔑 PASO 2 TOKEN: AÑADIR CSRF HEADER Y TOKEN (CORRECCIÓN)
+                // Se verifica que las variables existan para evitar errores de "Invalid name"
+                if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                    headers[CSRF_HEADER] = CSRF_TOKEN;
+                } else {
+                console.error("ADVERTENCIA: Variables CSRF no definidas. La petición podría fallar.");
+                }
 
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             id: rolId,
                             estado: nuevoEstado
@@ -64,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             } else {
+                // Revertir el estado del checkbox si el usuario cancela.
                 event.target.checked = !event.target.checked;
             }
         });
