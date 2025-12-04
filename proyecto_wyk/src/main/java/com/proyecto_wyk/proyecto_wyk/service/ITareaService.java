@@ -16,7 +16,7 @@ public interface ITareaService {
     long cantTareasCancelada();
 
     Tarea guardarTarea(Tarea tarea);
-    boolean existeTarea(Long idTarea);
+    boolean existeTarea(String nombreTarea);
 
     Tarea buscarPorID(Long id);
     void eliminarTarea(Long id);

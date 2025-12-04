@@ -56,8 +56,8 @@ public class TareaService implements ITareaService {
     }
 
     @Override
-    public boolean existeTarea(Long idTarea) {
-        return repository.existsById(idTarea);
+    public boolean existeTarea(String nombreTarea) {
+        return repository.existsByTarea(nombreTarea);
     }
 
     @Override

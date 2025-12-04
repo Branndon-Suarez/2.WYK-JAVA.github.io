@@ -1,35 +1,65 @@
-document.getElementById('create-tarea-form').addEventListener('submit', function (e) {
-    e.preventDefault();
+document.getElementById("create-tarea-form").addEventListener("submit", function(e) {
+    e.preventDefault(); // Evita el envío normal
 
-    const formData = new FormData(this);
+    const data = {
+        tarea: document.getElementById("tarea").value,
+        categoria: document.getElementById("categoria").value,
+        descripcion: document.getElementById("descripcion").value,
+        tiempoEstimadoHoras: document.getElementById("tiempo").value,
+        prioridad: document.getElementById("prioridad").value,
+        idUsuarioAsignado: document.getElementById("usuario_fk").value
+    };
 
-    fetch(APP_URL + 'tareas/create', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+    Swal.fire({
+        title: "¿Crear tarea?",
+        text: "Se registrará un nuevo tarea en el sistema.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, crear",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const headers = {
+                "Content-Type": "application/json"
+            };
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
+            fetch(URL_GUARDAR, {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('Error en la conexión con el servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: "¡Éxito!",
+                        text: data.message,
+                        icon: "success"
+                    }).then(() => {
+                        window.location.href = URL_REDIRECT;
+                    });
+
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        text: data.message,
+                        icon: "error"
+                    });
+                }
+            })
+            .catch(err => {
                 Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: data.message
-                }).then(() => {
-                    window.location.href = APP_URL + 'tareas';
+                    title: "Error",
+                    text: "No se pudo conectar con el servidor.",
+                    icon: "error"
                 });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message
-                });
-            }
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudo contactar al servidor.'
             });
-        });
+        }
+    });
 });

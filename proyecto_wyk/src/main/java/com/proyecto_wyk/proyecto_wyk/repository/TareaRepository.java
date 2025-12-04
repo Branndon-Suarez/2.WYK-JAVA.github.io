@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    boolean existsByTarea(String tarea);
 }

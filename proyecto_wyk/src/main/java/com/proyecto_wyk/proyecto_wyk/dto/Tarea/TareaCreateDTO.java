@@ -48,8 +48,8 @@ public class TareaCreateDTO {
     private Float tiempoEstimadoHoras;
 
     // --- Columna PRIORIDAD (ENUM) ---
-    @NotNull(message = "Debe seleccionar una prioridad.")
-    private Tarea.Prioridad prioridad; // Definir el enum
+    @NotEmpty(message = "Debe seleccionar una prioridad.")
+    private String prioridad;
 
 
     // --- Columna USUARIO_ASIGNADO_FK (Clave Foránea a USUARIO) ---
@@ -89,11 +89,11 @@ public class TareaCreateDTO {
         this.tiempoEstimadoHoras = tiempoEstimadoHoras;
     }
 
-    public Tarea.Prioridad getPrioridad() {
+    public String getPrioridad() {
         return prioridad;
     }
 
-    public void setPrioridad(Tarea.Prioridad prioridad) {
+    public void setPrioridad(String prioridad) {
         this.prioridad = prioridad;
     }
 

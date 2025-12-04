@@ -1,65 +1,83 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const modalUsuarios = document.getElementById('modalUsuarios');
-    const tablaUsuariosBody = document.querySelector('#tablaUsuariosModal tbody');
-    let inputTargetId = '';
-    let displayTargetId = '';
+// /js/tarea/selectUserModal.js
 
-    // Maneja la apertura del modal y la carga de datos
-    modalUsuarios.addEventListener('show.bs.modal', async function (event) {
-        // Obtiene qué campos del formulario deben ser actualizados
-        const button = event.relatedTarget;
-        inputTargetId = button.getAttribute('data-input-target');
-        displayTargetId = button.getAttribute('data-display-target');
+const tablaUsuariosModalBody = document.querySelector('#tablaUsuariosModal tbody');
+const modalUsuarios = document.getElementById('modalUsuarios');
+let usuariosData = [];
 
-        // Limpia la tabla antes de cargar nuevos datos
-        tablaUsuariosBody.innerHTML = '';
-
-        try {
-            const response = await fetch(`${APP_URL}usuarios/getUsuariosAjax`);
-            if (!response.ok) {
-                throw new Error('Error al cargar los usuarios.');
-            }
-            const data = await response.json();
-
-            if (data.success) {
-                data.data.forEach(user => {
-                    const row = `
-                        <tr>
-                            <td>${user.NOMBRE}</td>
-                            <td>${user.NOMBRE_ROL}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-info btn-seleccionar-usuario" 
-                                    data-id="${user.ID_USUARIO}"
-                                    data-nombre="${user.NOMBRE}">
-                                    Seleccionar
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tablaUsuariosBody.innerHTML += row;
-                });
-            } else {
-                Swal.fire('Error', data.message || 'Error al obtener usuarios.', 'error');
-            }
-        } catch (error) {
-            Swal.fire('Error', 'No se pudo cargar la lista de usuarios. ' + error.message, 'error');
+// Escucha cuando el modal se muestra
+if (modalUsuarios) {
+    modalUsuarios.addEventListener('show.bs.modal', async () => {
+        // Cargar los usuarios si aún no se han cargado (o recargar si quieres datos frescos)
+        if (usuariosData.length === 0) {
+            await cargarUsuarios();
         }
     });
+}
 
-    // Maneja la selección de un usuario
-    tablaUsuariosBody.addEventListener('click', function (event) {
-        if (event.target.classList.contains('btn-seleccionar-usuario')) {
-            const button = event.target;
-            const userId = button.getAttribute('data-id');      // <-- Captura el ID del usuario
-            const userName = button.getAttribute('data-nombre'); // <-- Captura el nombre del usuario
+// Cargar usuarios desde el servidor
+async function cargarUsuarios() {
+    // Limpiar la tabla y mostrar cargando
+    tablaUsuariosModalBody.innerHTML = `<tr><td colspan="4">Cargando usuarios...</td></tr>`;
+    usuariosData = []; // Resetear datos
 
-            // Actualiza los campos ocultos (ID) y de visualización (NOMBRE)
-            document.getElementById(inputTargetId).value = userId;
-            document.getElementById(displayTargetId).value = userName;
+    try {
+        // Usar el endpoint que creaste en UsuarioController
+        const url = APP_URL + 'usuarios/listarUsuariosModal';
+        const res = await fetch(url, { cache: "no-store" });
 
-            // Cierra el modal
-            const modal = bootstrap.Modal.getInstance(modalUsuarios);
-            modal.hide();
+        if (!res.ok) throw new Error('Error al cargar los usuarios');
+
+        const data = await res.json();
+
+        if (data.success) {
+            usuariosData = data.data;
+            renderizarUsuarios();
+        } else {
+            console.error("Error del servidor:", data.message);
+            tablaUsuariosModalBody.innerHTML = `<tr><td colspan="4">${data.message}</td></tr>`;
         }
+    } catch (err) {
+        console.error("Error de red:", err);
+        tablaUsuariosModalBody.innerHTML = `<tr><td colspan="4">Error al cargar usuarios.</td></tr>`;
+    }
+}
+
+// Renderizar usuarios en la tabla del modal
+function renderizarUsuarios() {
+    tablaUsuariosModalBody.innerHTML = ''; // Limpiar la tabla
+
+    if (usuariosData.length === 0) {
+        tablaUsuariosModalBody.innerHTML = `<tr><td colspan="4">No hay usuarios disponibles.</td></tr>`;
+        return;
+    }
+
+    usuariosData.forEach(usuario => {
+        // Asumiendo que tu entidad Usuario tiene campos: numDoc, nombre, y un objeto Rol dentro.
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${usuario.numDoc}</td>
+            <td>${usuario.nombre}</td>
+            <td>${usuario.rol.rol}</td>
+            <td>
+                <button type="button" class="btn btn-success btn-sm btn-select-usuario"
+                        data-id="${usuario.idUsuario}"
+                        data-nombre="${usuario.nombre}"
+                        data-bs-dismiss="modal">Seleccionar
+                </button>
+            </td>
+        `;
+        tablaUsuariosModalBody.appendChild(tr);
     });
-});
+
+    // Añadir event listeners a los botones de selección
+    document.querySelectorAll('.btn-select-usuario').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            const nombre = e.target.dataset.nombre;
+
+            // Asignar al campo oculto y al campo de visualización del formulario de Tarea
+            document.getElementById('usuario_fk').value = id;         // <-- ID al campo oculto
+            document.getElementById('rol_display').value = nombre;    // <-- Nombre al campo visible
+        });
+    });
+}

@@ -48,6 +48,24 @@ public class UsuarioController {
         return "usuario/dashboardUsuario";
     }
 
+    @GetMapping("/listarUsuariosModal")
+    @ResponseBody
+    public Map<String, Object> listarUsuariosModal() {
+        try {
+            List<Usuario> listarUsuario = usuarioService.listarUsuario();
+
+            return Map.of(
+                    "success", true,
+                    "data", listarUsuario
+            );
+        } catch (Exception e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Error al listar los usuarios para el modal: " + e.getMessage()
+            );
+        }
+    }
+
     @GetMapping("/formGuardar")
     public String mostrarFormGuardar(Model model) {
         model.addAttribute("formGuardarUsuario", new UsuarioCreateDTO());

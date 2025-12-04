@@ -6,9 +6,12 @@ import com.proyecto_wyk.proyecto_wyk.dto.usuario.UsuarioCreateDTO;
 import com.proyecto_wyk.proyecto_wyk.entity.Rol;
 import com.proyecto_wyk.proyecto_wyk.entity.Tarea;
 import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
+import com.proyecto_wyk.proyecto_wyk.security.CustomUserDetails;
 import com.proyecto_wyk.proyecto_wyk.service.impl.TareaService;
 import com.proyecto_wyk.proyecto_wyk.service.impl.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
@@ -37,7 +40,7 @@ public class TareaController {
         model.addAttribute("tareasCompletadas", tareaService.cantTareasCompletada());
         model.addAttribute("tareasCanceladas", tareaService.cantTareasCancelada());
 
-        return "tareas/dashboardTarea";
+        return "tarea/dashboardTarea";
     }
 
     @GetMapping("/formGuardar")
@@ -54,35 +57,73 @@ public class TareaController {
             @Valid @RequestBody TareaCreateDTO dto,
             BindingResult result
     ) {
-        if (result.hasErrors()) {
+        // --- 1. OBTENER EL USUARIO CREADOR LOGUEADO ---
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioCreador = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            usuarioCreador = userDetails.getUsuario();
+        }
+
+        if (usuarioCreador == null) {
+            // Esto significa que el usuario no está correctamente autenticado.
             return Map.of(
                     "success", false,
-                    "message", result.getFieldError().getDefaultMessage()
+                    "message", "Error de autenticación. El usuario creador no pudo ser identificado."
             );
         }
 
-        if (tareaService.existeTarea(Long.valueOf(dto.getTarea()))) {
+        if (result.hasErrors()) {
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank")) // 1. Busca si existe un error de @NotBlank para darle prioridad
+                    .findFirst()
+                    .orElse(result.getFieldError())// 2. Si no es @NotBlank, toma el primer error que encuentre
+                    .getDefaultMessage();
+            return Map.of(
+                    "success", false,
+                    "message", mensaje
+            );
+        }
+
+        if (tareaService.existeTarea(dto.getTarea())) {
             return Map.of(
                     "success", false,
                     "message", "Ya existe esa tarea dentro del sistema."
             );
         }
+
+        // Conversión de String a Enum y try catch para manejar atacante e impedir no enviar datos que no estén en el enum.
+        Tarea.Prioridad prioridadEnum;
+        try {
+            prioridadEnum = Tarea.Prioridad.valueOf(dto.getPrioridad().toUpperCase()); // Asegurar mayúsculas
+        } catch (IllegalArgumentException e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Prioridad no válida. Por favor, selecciona un valor de la lista."
+            );
+        }
+
         Tarea nuevaTarea = new Tarea();
         nuevaTarea.setTarea(dto.getTarea());
         nuevaTarea.setCategoria(dto.getCategoria());
         nuevaTarea.setDescripcion(dto.getDescripcion());
-        nuevaTarea.setTiempoEstimadoHoras(Float.valueOf(dto.getTiempoEstimadoHoras()));
-        nuevaTarea.setPrioridad(dto.getPrioridad());
+        nuevaTarea.setTiempoEstimadoHoras(dto.getTiempoEstimadoHoras());
+        nuevaTarea.setPrioridad(prioridadEnum);
         nuevaTarea.setEstadoTarea(Tarea.EstadoTarea.PENDIENTE);
 
-        // --- ASIGNAR USUARIO CORRECTAMENTE ---
-        Usuario usuario = usuarioService.buscarPorID(Long.valueOf(dto.getIdUsuarioAsignado()));
-        if (usuario == null) {
+        // --- ASIGNAR USUARIO ASIGNADO ---
+        Usuario usuarioAsignado = usuarioService.buscarPorID(Long.valueOf(dto.getIdUsuarioAsignado()));
+        if (usuarioAsignado == null) {
             return Map.of(
                     "success", false,
-                    "message", "La tarea seleccionada no existe.");
+                    "message", "El usuario asignado no existe.");
         }
-        nuevaTarea.setUsuarioAsignado(usuario);
+        nuevaTarea.setUsuarioAsignado(usuarioAsignado);
+
+        // --- ASIGNAR USUARIO CREADOR (FK: Usuario Logueado) ---
+        nuevaTarea.setUsuarioCreador(usuarioCreador);
 
         tareaService.guardarTarea(nuevaTarea);
 
@@ -91,5 +132,4 @@ public class TareaController {
                 "message", "Tarea registrada correctamente."
         );
     }
-    //Falta el usuario creador
 }
