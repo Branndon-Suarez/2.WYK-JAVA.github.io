@@ -51,6 +51,7 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    // Me permite saber el estado de la cuenta del usuario logueado
     @Override
     public boolean isEnabled() {
         return usuario.isEstadoUsuario();

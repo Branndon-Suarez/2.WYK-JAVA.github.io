@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,10 +29,13 @@ import java.util.Map;
 public class UsuarioController {
     private final UsuarioService usuarioService;
     private final RolService rolService;
+    // INYECTAMOS DEPENDENCIA PARA CIFRAR CONTRASEÑA
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioController(UsuarioService usuarioService, RolService rolService) {
+    public UsuarioController(UsuarioService usuarioService, RolService rolService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.rolService = rolService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -74,7 +78,10 @@ public class UsuarioController {
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNumDoc(Long.valueOf(dto.getNumDoc()));
         nuevoUsuario.setNombre(dto.getNombre());
-        nuevoUsuario.setPasswordUsuario(dto.getPasswordUsuario());
+
+        // CIFRAR PASSWORD
+        nuevoUsuario.setPasswordUsuario(passwordEncoder.encode(dto.getPasswordUsuario()));
+
         nuevoUsuario.setTelUsuario(Long.valueOf(dto.getTelUsuario()));
         nuevoUsuario.setEmailUsuario(dto.getEmailUsuario());
         nuevoUsuario.setFechaRegistro(java.time.LocalDateTime.now());
@@ -143,9 +150,9 @@ public class UsuarioController {
 
         actualUsuario.setNumDoc(Long.valueOf(dto.getNumDoc()));
         actualUsuario.setNombre(dto.getNombre());
-        // Solo actualizar contraseña si solo se pone un valor nuevo
+        // SOLO ACTUALIZAR Y CIFRAR LA CONTRASEÑA SÍ SE PROPORCIONÓ UNA NUEVA
         if (dto.getPasswordUsuario() != null && !dto.getPasswordUsuario().isBlank()) {
-            actualUsuario.setPasswordUsuario(dto.getPasswordUsuario());
+            actualUsuario.setPasswordUsuario(passwordEncoder.encode(dto.getPasswordUsuario()));
         }
         actualUsuario.setTelUsuario(Long.valueOf(dto.getTelUsuario()));
         actualUsuario.setEmailUsuario(dto.getEmailUsuario());
