@@ -65,13 +65,13 @@ public class DataInitializer {
 
             // --- 2. Crear usuario ADMIN si no existe ---
             // 2.1. Usuario ADMINISTRADOR
-            crearUsuarioSiNoExiste(userRepo, encoder, adminRoleOpt, "Administrador", "admin@wyk.com", 1000000000L, "admin123");
+            crearUsuarioSiNoExiste(userRepo, encoder, adminRoleOpt, "Administrador", "admin@wyk.com", 1000000000L, "Admin_123");
             // 2.2. Usuario MESERO
-            crearUsuarioSiNoExiste(userRepo, encoder, meseroRoleOpt, "Mesero", "mesero@wyk.com", 1000000001L, "mesero123");
+            crearUsuarioSiNoExiste(userRepo, encoder, meseroRoleOpt, "Mesero", "mesero@wyk.com", 1000000001L, "Mesero_123");
             // 2.3. Usuario CAJERO
-            crearUsuarioSiNoExiste(userRepo, encoder, cajeroRoleOpt, "Cajero", "cajero@wyk.com", 1000000002L, "cajero123");
+            crearUsuarioSiNoExiste(userRepo, encoder, cajeroRoleOpt, "Cajero", "cajero@wyk.com", 1000000002L, "Cajero_123");
             // 2.4. Usuario COCINERO
-            crearUsuarioSiNoExiste(userRepo, encoder, cocineroRoleOpt, "Cocinero", "cocinero@wyk.com", 1000000003L, "cocinero123");
+            crearUsuarioSiNoExiste(userRepo, encoder, cocineroRoleOpt, "Cocinero", "cocinero@wyk.com", 1000000003L, "Cocinero_123");
         };
     }
 }
