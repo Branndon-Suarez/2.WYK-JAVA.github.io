@@ -20,8 +20,6 @@ import java.util.Map;
 @Controller // Usar @Controller para que pueda manejar VISTAS (Thymeleaf)
 @RequestMapping("/ventas")
 public class VentaController {
-
-    // Necesitamos ambos servicios inyectados
     private final VentaService ventaService;
     private final UsuarioService usuarioService; // Mantenerlo si el método GET lo usa
 
@@ -30,8 +28,6 @@ public class VentaController {
         this.usuarioService = usuarioService;
     }
 
-    // --- 1. ENDPOINT PARA MOSTRAR LA VISTA (GET) ---
-    // (Método transferido desde VentaVistaController)
     @GetMapping("/crear")
     public String mostrarCrearVenta(Model model) {
 
@@ -58,14 +54,13 @@ public class VentaController {
         model.addAttribute("currentUserId", userId);
         model.addAttribute("rolClasificacion", rolClasificacion);
 
-        // 6. Retornar la plantilla (Ruta: src/main/resources/templates/venta/ventaCompleta.html)
+        // 6. Retornar la plantilla
         return "venta/ventaCompleta";
     }
 
     // --- 2. ENDPOINT PARA GUARDAR VENTA (POST AJAX) ---
-    // (Método transferido desde el antiguo VentaController)
     @PostMapping("/guardar")
-    @ResponseBody // <--- ¡CLAVE! Indica que el retorno NO es una vista, sino JSON
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> guardarVenta(@RequestBody VentaDTO ventaDTO) {
         try {
             Venta ventaGuardada = ventaService.guardarVentaCompleta(ventaDTO);

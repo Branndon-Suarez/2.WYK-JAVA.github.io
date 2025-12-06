@@ -20,11 +20,9 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    // Endpoint utilizado por pedidosMesero.js para llenar el modal de productos
     @GetMapping("/listar")
-    public ResponseEntity<?> listarProductosParaModal() {
+    public ResponseEntity<?> listarProductosModal() {
         try {
-            // Este método debe devolver todos los productos necesarios para la venta.
             List<Producto> productos = productoService.listarTodosActivos();
 
             // Spring Boot convierte automáticamente la lista de entidades a JSON.

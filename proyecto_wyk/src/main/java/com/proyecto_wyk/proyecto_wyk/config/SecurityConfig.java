@@ -2,6 +2,7 @@ package com.proyecto_wyk.proyecto_wyk.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,11 +29,59 @@ public class SecurityConfig {
                         // Permite acceso solo a la raíz y recursos estáticos. ELIMINAMOS /registro
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/lord-icon/**").permitAll()
 
-                        // Reglas de Autorización basadas en el campo ROL
+                        // --- 🎯 REGLAS GENERALES BASADAS EN ROL ---
                         .requestMatchers("/admin/**").hasAuthority("ADMINISTRADOR")
                         .requestMatchers("/caja/**").hasAuthority("CAJERO")
                         .requestMatchers("/cocina/**").hasAuthority("COCINERO")
                         .requestMatchers("/mesas/**").hasAuthority("MESERO")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 0. ACCESO AL DASHBOARD INICIAL
+                        .requestMatchers("/dashboard")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO", "CAJERO", "COCINERO")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 1. REGLAS PARA ROLES (CRUD COMPLETO)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET,"/roles", "/roles/**")
+                        .hasAuthority("ADMINISTRADOR")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 2. REGLAS PARA USUARIOS (CRUD)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET,"/usuarios", "/usuarios/**")
+                        .hasAuthority("ADMINISTRADOR")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 3. REGLAS PARA TAREAS (VISTA Y API)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET, "/tareas", "/tareas/**")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+
+                        // Acciones POST
+                        .requestMatchers(HttpMethod.POST, "/tareas/guardar", "/tareas/actualizar", "/tareas/delete", "/tareas/updateState")
+                        .hasAnyAuthority("ADMINISTRADOR")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 4. REGLAS PARA PRODUCTO (VISTA Y API)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET, "/productos", "/productos/**")
+                        .hasAnyAuthority("ADMINISTRADOR")
+
+                        // Acciones POST
+                        .requestMatchers(HttpMethod.POST, "/tareas/guardar", "/tareas/actualizar", "/tareas/delete", "/tareas/updateState")
+                        .hasAnyAuthority("ADMINISTRADOR", "COCINERO")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 5. REGLAS PARA PRODUCTO (VISTA Y API)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET, "/ventas/crear")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+
+                        // Acciones POST
+                        .requestMatchers(HttpMethod.POST, "/ventas/guardar")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+
 
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()

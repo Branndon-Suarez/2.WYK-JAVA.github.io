@@ -39,10 +39,7 @@ public class VentaService {
      */
     @Transactional
     public Venta guardarVentaCompleta(VentaDTO ventaDTO) {
-
         // 1. Mapeo y dependencias
-
-        // El JS envía 'YYYY-MM-DDTmm:ss', usamos el formatter estándar de Java.
         LocalDateTime fechaVenta = LocalDateTime.parse(ventaDTO.getFecha(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
         // Buscar al Usuario (empleado que realiza la venta)
@@ -69,7 +66,6 @@ public class VentaService {
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + detalleDTO.getId()));
 
             // b) Validar Stock (la cantidad seleccionada no debe ser mayor a la existencia)
-            // Ambos son Long/Integer
             if (producto.getCantExistProducto() < detalleDTO.getCantidad()) {
                 throw new ExistenciaInsuficienteException("Stock insuficiente para: " + producto.getNombreProducto() +
                         ". Stock actual: " + producto.getCantExistProducto());
@@ -79,21 +75,15 @@ public class VentaService {
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(ventaGuardada);
             detalle.setProducto(producto);
-            // La cantidad en la BD es BIGINT, mapeada a Long.
             detalle.setCantidad(detalleDTO.getCantidad());
 
             // El subtotal es la multiplicación de (Cantidad * Precio Unitario)
-            // Multiplicamos como Long y lo redondeamos (ya que el total en BD es BIGINT)
             Double subTotal = detalle.getCantidad() * detalleDTO.getPrecio();
             detalle.setSubTotal(subTotal);
 
             detalleVentaRepository.save(detalle);
 
-            /** * NOTA: Es fundamental que tengas un TRIGGER en tu base de datos (MySQL)
-             * en la tabla DETALLE_VENTA que se ejecute DESPUÉS de una inserción (AFTER INSERT)
-             * para restar la cantidad vendida al campo CANT_EXIST_PRODUCTO en la tabla PRODUCTO.
-             * Sin el trigger, el stock no se actualizará.
-             */
+            // NOTA: Gracias al trigger de la BD 'TR_RESTAR_STOCK_DESPUES_VENTA' el stock de la cantidad de existencia de producto se actualizará
         }
 
         return ventaGuardada;
