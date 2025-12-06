@@ -1,5 +1,8 @@
-// pedidosMesero.js 
-// External JS: usa las variables globales APP_URL y USER_ID inyectadas por la vista PHP.
+// pedidosMesero.js
+// Asume la existencia de las variables globales:
+// - APP_URL (ej: 'http://localhost:8080/')
+// - USER_ID (ID del usuario autenticado)
+// - CSRF_HEADER, CSRF_TOKEN (para seguridad)
 
 let productosSeleccionados = [];
 let productosDisponibles = [];
@@ -14,13 +17,11 @@ const btnAddProducto = document.getElementById("btnAddProducto");
 const btnCerrarModal = document.getElementById("btnCerrarModal");
 const btnGuardarPedido = document.getElementById("btnGuardarPedido");
 
-const fechaVentaInput = document.getElementById("fechaVenta"); // NUEVO: Obtener el input de fecha
-
-if (!APP_URL) console.warn("APP_URL no está definida. Revisa la vista PHP.");
+const fechaVentaInput = document.getElementById("fechaVenta");
 
 // ------------------ INICIALIZACIÓN ------------------
-// Establecer la fecha y hora actual al cargar
 document.addEventListener("DOMContentLoaded", () => {
+    // Establecer la fecha y hora actual (formato: YYYY-MM-DDTmm:ss)
     if (!fechaVentaInput.value) {
         const now = new Date();
         const year = now.getFullYear();
@@ -33,12 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ------------------ TABLA (productos seleccionados) ------------------
+
 function actualizarTabla() {
     tablaProductos.innerHTML = "";
     let total = 0;
 
     productosSeleccionados.forEach((p, i) => {
-        const subtotal = p.cantidad * p.precio;
+        // Asegurar que las variables sean números antes de calcular
+        const cantidad = Number(p.cantidad) || 0;
+        const precio = Number(p.precio) || 0;
+        const subtotal = cantidad * precio;
         total += subtotal;
 
         const tr = document.createElement("tr");
@@ -50,23 +55,27 @@ function actualizarTabla() {
         const inputCantidad = document.createElement("input");
         inputCantidad.type = "number";
         inputCantidad.min = "1";
-        inputCantidad.value = p.cantidad;
+        inputCantidad.value = cantidad;
         inputCantidad.className = "input-cantidad";
+
+        // Obtener la existencia máxima del producto
+        const productoExistente = productosDisponibles.find(prod => String(prod.id) === String(p.id));
+        const maxExistencia = productoExistente ? Number(productoExistente.existencia) : 9999;
+
         inputCantidad.addEventListener("change", (e) => {
             let v = parseInt(e.target.value, 10);
             if (isNaN(v) || v < 1) v = 1;
 
-            // Validar que la cantidad no exceda la existencia
-            const productoExistente = productosDisponibles.find(prod => String(prod.id) === String(p.id));
-            if (productoExistente && v > productoExistente.existencia) {
+            if (v > maxExistencia) {
+                // Mensaje de alerta
                 Swal.fire({
                     icon: 'warning',
                     title: 'Stock Insuficiente',
-                    text: 'No hay más cantidad de este producto.',
+                    text: `La cantidad máxima disponible es ${maxExistencia}.`,
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 });
-                v = productoExistente.existencia;
+                v = maxExistencia;
                 inputCantidad.value = v;
             }
 
@@ -76,10 +85,10 @@ function actualizarTabla() {
         tdCantidad.appendChild(inputCantidad);
 
         const tdPrecio = document.createElement("td");
-        tdPrecio.textContent = `$${Number(p.precio).toFixed(0)}`;
+        tdPrecio.textContent = `$${precio.toFixed(0)}`;
 
         const tdSubtotal = document.createElement("td");
-        tdSubtotal.textContent = `$${(subtotal).toFixed(0)}`;
+        tdSubtotal.textContent = `$${subtotal.toFixed(0)}`;
 
         const tdAcciones = document.createElement("td");
         const btnEliminar = document.createElement("button");
@@ -93,6 +102,7 @@ function actualizarTabla() {
                 colors="primary:#121331,secondary:#c71f16,tertiary:#ebe6ef"
                 style="width:30px;height:30px">
             </lord-icon>`;
+
         btnEliminar.addEventListener("click", () => {
             Swal.fire({
                 title: '¿Estás seguro?',
@@ -107,11 +117,7 @@ function actualizarTabla() {
                 if (result.isConfirmed) {
                     productosSeleccionados.splice(i, 1);
                     actualizarTabla();
-                    Swal.fire(
-                        '¡Removido!',
-                        'El producto ha sido removido.',
-                        'success'
-                    );
+                    Swal.fire('¡Removido!', 'El producto ha sido removido.', 'success');
                 }
             });
         });
@@ -126,20 +132,17 @@ function actualizarTabla() {
         tablaProductos.appendChild(tr);
     });
 
-    totalGeneralEl.textContent = Number(total).toFixed(0);
+    totalGeneralEl.textContent = total.toFixed(0);
 }
 
-// ------------------ MODAL ------------------
+// ------------------ MODAL DE PRODUCTOS ------------------
 btnAddProducto.addEventListener("click", () => abrirModal());
 btnCerrarModal.addEventListener("click", () => cerrarModal());
 
 function abrirModal() {
     modal.classList.remove("hidden");
-    if (productosDisponibles.length === 0) {
-        cargarProductos();
-    } else {
-        renderizarProductos();
-    }
+    // Siempre intenta recargar productos para tener el stock actualizado
+    cargarProductos();
 }
 
 function cerrarModal() {
@@ -153,23 +156,17 @@ function renderizarProductos(filtro = "") {
 
     const filtrados = productosDisponibles.filter(p => p.nombre.toLowerCase().includes(filtroLow));
     if (filtrados.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 4;
-        td.textContent = "No hay productos";
-        tr.appendChild(td);
-        listaProductos.appendChild(tr);
+        listaProductos.innerHTML = `<tr><td colspan="4">No hay productos disponibles</td></tr>`;
         return;
     }
 
     filtrados.forEach(p => {
         const tr = document.createElement("tr");
 
-        // NUEVO: Color de fila si el stock es bajo o cero
         if (p.existencia <= 5 && p.existencia > 0) {
-            tr.classList.add("low-stock");
+            tr.classList.add("low-stock"); // Estilo CSS para stock bajo
         } else if (p.existencia === 0) {
-            tr.classList.add("no-stock");
+            tr.classList.add("no-stock"); // Estilo CSS para sin stock
         }
 
         const tdNombre = document.createElement("td");
@@ -178,7 +175,6 @@ function renderizarProductos(filtro = "") {
         const tdPrecio = document.createElement("td");
         tdPrecio.textContent = `$${Number(p.precio).toFixed(0)}`;
 
-        // NUEVA COLUMNA: Cantidad de existencia
         const tdExistencia = document.createElement("td");
         tdExistencia.textContent = p.existencia;
 
@@ -193,13 +189,13 @@ function renderizarProductos(filtro = "") {
                 style="width:30px;height:30px">
             </lord-icon>`;
         btn.type = "button";
+
         btn.addEventListener("click", () => {
-            // NUEVO: No permitir agregar si no hay stock
             if (p.existencia <= 0) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Sin Stock',
-                    text: 'No hay más cantidad de este producto.',
+                    text: 'Este producto no tiene existencias disponibles.',
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 });
@@ -211,7 +207,7 @@ function renderizarProductos(filtro = "") {
 
         tr.appendChild(tdNombre);
         tr.appendChild(tdPrecio);
-        tr.appendChild(tdExistencia); // Añade la nueva celda
+        tr.appendChild(tdExistencia);
         tr.appendChild(tdAccion);
 
         listaProductos.appendChild(tr);
@@ -223,41 +219,45 @@ buscarProducto && buscarProducto.addEventListener("input", (e) => {
     renderizarProductos(e.target.value);
 });
 
-// ------------------ CARGAR PRODUCTOS DESDE BACKEND ------------------
+// ------------------ CARGAR PRODUCTOS DESDE SPRING BOOT ------------------
+
 async function cargarProductos() {
+    listaProductos.innerHTML = `<tr><td colspan="4">Cargando productos...</td></tr>`;
     try {
+        // Llama al nuevo endpoint del ProductoController
         const url = APP_URL + 'productos/listar';
-        console.log("➡️ Fetch productos:", url);
 
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error('Error en la respuesta del servidor');
         const data = await res.json();
 
+        // Mapeo adaptado a las entidades que devuelve Spring Boot
         productosDisponibles = (Array.isArray(data) ? data : []).map(item => ({
-            id: item.id_producto ?? item.ID_PRODUCTO ?? null,
-            nombre: item.nombre_producto ?? item.NOMBRE_PRODUCTO ?? '',
-            precio: Number(item.valor_unitario_producto ?? item.VALOR_UNITARIO_PRODUCTO ?? 0),
-            // Mapear la cantidad existente
-            existencia: Number(item.cant_exist_producto ?? item.CANT_EXIST_PRODUCTO ?? 0)
+            // Mapeo a camelCase/nombres de entidades de Java
+            id: item.idProducto,
+            nombre: item.nombreProducto,
+            precio: Number(item.valorUnitarioProducto),
+            existencia: Number(item.cantExistProducto)
         }));
 
         renderizarProductos();
     } catch (err) {
         console.error("Error cargando productos:", err);
-        listaProductos.innerHTML = `<tr><td colspan="4">Error cargando productos</td></tr>`;
+        listaProductos.innerHTML = `<tr><td colspan="4">Error al cargar productos. Intenta recargar la página.</td></tr>`;
     }
 }
 
 // ------------------ AGREGAR PRODUCTO ------------------
+
 function agregarProducto(p) {
     const existente = productosSeleccionados.find(x => String(x.id) === String(p.id));
     if (existente) {
-        // Validar que no se exceda la existencia
-        if (existente.cantidad >= p.existencia) {
+        // Lógica de stock antes de agregar +1
+        if (Number(existente.cantidad) >= Number(p.existencia)) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Stock Insuficiente',
-                text: 'No hay más cantidad de este producto.',
+                text: 'Has alcanzado la cantidad máxima disponible.',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Aceptar'
             });
@@ -269,14 +269,16 @@ function agregarProducto(p) {
             id: p.id,
             nombre: p.nombre,
             precio: p.precio,
-            cantidad: 1
+            cantidad: 1 // Empieza en 1
         });
     }
     actualizarTabla();
     cerrarModal();
 }
 
-// ------------------ GUARDAR PEDIDO ------------------
+
+// ------------------ GUARDAR PEDIDO (AJAX con CSRF) ------------------
+
 btnGuardarPedido.addEventListener("click", () => {
     const fecha = document.getElementById("fechaVenta").value;
     const mesa = document.getElementById("numeroMesa").value || null;
@@ -286,30 +288,19 @@ btnGuardarPedido.addEventListener("click", () => {
     const usuarioId = (typeof USER_ID !== 'undefined') ? USER_ID : null;
 
     if (productosSeleccionados.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Sin Productos',
-            text: 'Debes añadir al menos un producto.',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Aceptar'
-        });
+        // ... (Alerta de sin productos)
+        Swal.fire({ icon: 'warning', title: 'Sin Productos', text: 'Debes añadir al menos un producto.' });
         return;
     }
     if (!usuarioId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de Autenticación',
-            text: 'Usuario no identificado. Vuelve a iniciar sesión.',
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Aceptar'
-        });
+        // ... (Alerta de error de usuario)
+        Swal.fire({ icon: 'error', title: 'Error de Autenticación', text: 'Usuario no identificado.' });
         return;
     }
 
-    // Diálogo de confirmación antes de guardar
     Swal.fire({
         title: '¿Deseas finalizar la venta?',
-        text: "Una vez aceptada, el pedido será registrado y el inventario actualizado.",
+        text: "El pedido será registrado y el inventario actualizado.",
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
@@ -318,58 +309,59 @@ btnGuardarPedido.addEventListener("click", () => {
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
+
+            // Mapeo final al formato del VentaDTO de Spring Boot
             const productosParaEnviar = productosSeleccionados.map(p => ({
-                id: p.id,
+                id: p.id, // ID del producto
                 cantidad: Number(p.cantidad),
-                precio: Number(p.precio)
+                precio: Number(p.precio) // Precio Unitario
             }));
 
             const total = Number(totalGeneralEl.textContent) || 0;
 
             const payload = {
                 fecha,
-                mesa,
+                mesa: mesa ? Number(mesa) : null, // Enviar como número o null
                 estadoPedido,
                 estadoPago,
                 descripcion,
-                usuarioId,
+                usuarioId: Number(usuarioId),
                 productos: productosParaEnviar,
-                total
+                total // Total General calculado
             };
 
             btnGuardarPedido.disabled = true;
             btnGuardarPedido.textContent = "Guardando...";
 
             try {
-                const url = APP_URL + 'pedidos/guardar';
-                console.log("➡️ Fetch guardar pedido:", url, payload);
-
+                // 🔑 CONFIGURACIÓN DE SEGURIDAD CSRF
+                const headers = { 'Content-Type': 'application/json' };
+                const url = window.APP_URL + 'ventas/guardar'; // Usar window.APP_URL
+                // Añadir el token CSRF usando las variables globales de window
+                if (window.CSRF_HEADER && window.CSRF_TOKEN) {
+                    headers[window.CSRF_HEADER] = window.CSRF_TOKEN;
+                }
                 const res = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify(payload)
                 });
 
                 const json = await res.json();
 
-                if (res.ok && (json.success || json.idVenta)) {
+                if (res.ok && json.success) {
                     Swal.fire({
                         icon: 'success',
                         title: '¡Pedido guardado!',
-                        text: "El pedido se ha guardado correctamente.",
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'Aceptar'
-                    }).then(() => {
-                        location.reload();
-                    });
+                        text: "El pedido se ha guardado correctamente. ID Venta: " + json.idVenta
+                    }).then(() => location.reload());
                 } else {
-                    console.error("Respuesta del servidor:", json);
+                    // Manejo de errores de negocio (Ej: Stock Insuficiente)
+                    const message = json.message || "Error desconocido al guardar el pedido.";
                     Swal.fire({
                         icon: 'error',
                         title: 'Error al guardar',
-                        text: "Error al guardar el pedido: " + (json.message || JSON.stringify(json)),
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'Aceptar'
+                        text: message
                     });
                 }
             } catch (err) {
@@ -377,9 +369,7 @@ btnGuardarPedido.addEventListener("click", () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de red',
-                    text: 'Error de red al guardar el pedido.',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Aceptar'
+                    text: 'No se pudo contactar al servidor.'
                 });
             } finally {
                 btnGuardarPedido.disabled = false;
