@@ -153,6 +153,7 @@ public class TareaController {
         return "tarea/formActualizar";
     }
 
+<<<<<<< HEAD
     @PostMapping("/actualizar")
     @ResponseBody
     public Map<String, Object> actualizarTarea(
@@ -315,4 +316,67 @@ public class TareaController {
                 .body(new InputStreamResource(pdfStream));
     }
 
+=======
+//    @PostMapping("/actualizar")
+//    @ResponseBody
+//    public Map<String, Object> actualizarTarea(
+//            @Valid @RequestBody TareaUpdateDTO dto,
+//            BindingResult result
+//    ) {
+//        if (result.hasErrors()) {
+//            String mensaje = result.getFieldErrors().stream()
+//                    .filter(e -> e.getCode().equals("NotBlank"))
+//                    .findFirst()
+//                    .orElse(result.getFieldError())
+//                    .getDefaultMessage();
+//            return Map.of(
+//                    "success", false,
+//                    "message", mensaje
+//            );
+//        }
+//
+//        Tarea actualTarea = tareaService.buscarPorID(dto.getIdTarea());
+//
+//        if (actualTarea == null) {
+//            return Map.of(
+//                    "success", false,
+//                    "message", "El usuario no existe."
+//            );
+//        }
+//
+//        // validar documento duplicado
+//        if (tareaService.existeTarea(dto.getTarea())
+//                && !actualTarea.getTarea().equals(dto.getTarea())) {
+//
+//            return Map.of(
+//                    "success", false,
+//                    "message", "Ya existe un usuario con ese número de documento."
+//            );
+//        }
+//
+//        actualTarea.setIdTarea(Long.valueOf(dto.getIdTarea()));
+//        actualTarea.setTarea(dto.getTarea());
+//        actualTarea.setCategoria(dto.getCategoria());
+//        actualTarea.setDescripcion(dto.getDescripcion());
+//        actualTarea.setTiempoEstimadoHoras(dto.getTiempoEstimadoHoras());
+//        actualTarea.setPrioridad(dto.getPrioridad());
+//        actualTarea.setEstadoTarea(dto.getEstadoTarea());
+//
+//        // --- ASIGNAR USUARIO CORRECTAMENTE ---
+//        Usuario usuario = usuarioService.buscarPorID(Long.valueOf(dto.getIdUsuarioAsignado()));
+//        if (usuario == null) {
+//            return Map.of(
+//                    "success", false,
+//                    "message", "El rol seleccionado no existe.");
+//        }
+//        actualTarea.setNombre(usuario);
+//
+//        tareaService.guardarTarea(actualTarea);
+//
+//        return Map.of(
+//                "success", true,
+//                "message", "Usuario actualizado correctamente."
+//        );
+//    }
+>>>>>>> 96c9ceafb92bc6de748e71b389eecde238a57e4d
 }

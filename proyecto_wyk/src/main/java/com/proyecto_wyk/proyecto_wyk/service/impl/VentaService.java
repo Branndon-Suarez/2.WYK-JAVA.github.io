@@ -11,14 +11,19 @@ import com.proyecto_wyk.proyecto_wyk.repository.DetalleVentaRepository;
 import com.proyecto_wyk.proyecto_wyk.repository.ProductoRepository;
 import com.proyecto_wyk.proyecto_wyk.repository.UsuarioRepository;
 import com.proyecto_wyk.proyecto_wyk.repository.VentaRepository;
+import com.proyecto_wyk.proyecto_wyk.service.IVentaService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class VentaService {
+public class VentaService implements IVentaService {
     private final VentaRepository ventaRepository;
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
@@ -29,6 +34,127 @@ public class VentaService {
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoRepository = productoRepository;
         this.usuarioRepository = usuarioRepository;
+    }
+
+    @Override
+    public List<Venta> listarVenta() {
+        return ventaRepository.findAll();
+    }
+
+    @Override
+    public List<DetalleVenta> findDetalleVentaByIdVenta(Long idVenta) {
+        return detalleVentaRepository.findByVenta_IdVenta(idVenta);
+    }
+
+    @Override
+    public long cantidadVentasExistentes() {
+        return ventaRepository.count();
+    }
+
+    @Override
+    public List<Venta> listarVentasFiltradas(Map<String, String> params) {
+
+        List<Venta> lista = ventaRepository.findAll();
+
+        // --- 1 BÚSQUEDA GLOBAL ---
+        // formateador para fechaRegistro
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String search = params.get("search");
+        if (search != null && !search.isEmpty()) {
+            String s = search.toLowerCase();
+
+            lista.removeIf(v -> {
+                // Campos de la entidad Venta
+                String fechaStr = v.getFechaHoraVenta() != null ? v.getFechaHoraVenta().format(dtf).toLowerCase() : "";
+                String totalStr = v.getTotalVenta() != null ? String.valueOf(v.getTotalVenta()) : "";
+                String numMesaStr = v.getNumeroMesa() != null ? String.valueOf(v.getNumeroMesa()) : "";
+                String descripcion = v.getDescripcion() != null ? v.getDescripcion().toLowerCase() : "";
+
+                // Campos relacionados
+                String usuarioNombre = (v.getUsuario() != null && v.getUsuario().getNombre() != null) ? v.getUsuario().getNombre().toLowerCase() : "";
+
+                // Campos Enum/String
+                String estadoPedidoStr = v.getEstadoPedido() != null ? v.getEstadoPedido().toString().toLowerCase() : "";
+                String estadoPagoStr = v.getEstadoPago() != null ? v.getEstadoPago().toString().toLowerCase() : "";
+
+
+                return !(
+                        fechaStr.contains(s)
+                                || totalStr.contains(s)
+                                || numMesaStr.contains(s)
+                                || descripcion.contains(s)
+                                || usuarioNombre.contains(s)
+                                || estadoPedidoStr.contains(s)
+                                || estadoPagoStr.contains(s)
+                );
+            });
+        }
+
+        // --- 2 FILTROS DINÁMICOS (chips) ---
+        params.forEach((clave, valor) -> {
+
+            if (clave.startsWith("filtro_") && valor != null && !valor.isEmpty()) {
+
+                String columna = clave.replace("filtro_", "").toUpperCase();
+                // Convertir los valores de filtro a una lista para búsqueda rápida
+                List<String> filtros = Arrays.stream(valor.split(","))
+                        .map(String::trim)
+                        .map(String::toUpperCase)
+                        .collect(Collectors.toList());
+
+                switch (columna) {
+                    // Filtro por fecha (se recomienda usar solo el formato YYYY-MM-DD para el filtro)
+                    case "FECHA_HORA_VENTA":
+                        lista.removeIf(v -> {
+                            String fechaCorta = v.getFechaHoraVenta() != null ?
+                                    v.getFechaHoraVenta().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toUpperCase() : "";
+                            return !filtros.contains(fechaCorta);
+                        });
+                        break;
+
+                    case "TOTAL_VENTA":
+                        lista.removeIf(v -> {
+                            String total = v.getTotalVenta() != null ? String.valueOf(v.getTotalVenta()) : "";
+                            return !filtros.contains(total);
+                        });
+                        break;
+
+                    case "NUMERO_MESA":
+                        lista.removeIf(v -> {
+                            String mesa = v.getNumeroMesa() != null ? String.valueOf(v.getNumeroMesa()) : "";
+                            return !filtros.contains(mesa);
+                        });
+                        break;
+
+                    case "NOMBRE_USUARIO": // Asume que la clave de filtro es NOMBRE_USUARIO
+                        lista.removeIf(v -> {
+                            String usuario = (v.getUsuario() != null && v.getUsuario().getNombre() != null) ?
+                                    v.getUsuario().getNombre().toUpperCase() : "";
+                            return !filtros.contains(usuario);
+                        });
+                        break;
+
+                    case "ESTADO_PEDIDO":
+                        lista.removeIf(v -> {
+                            String estadoPedido = v.getEstadoPedido() != null ?
+                                    v.getEstadoPedido().toString().toUpperCase() : "";
+                            return !filtros.contains(estadoPedido);
+                        });
+                        break;
+
+                    case "ESTADO_PAGO":
+                        lista.removeIf(v -> {
+                            String estadoPago = v.getEstadoPago() != null ?
+                                    v.getEstadoPago().toString().toUpperCase() : "";
+                            return !filtros.contains(estadoPago);
+                        });
+                        break;
+                }
+            }
+        });
+
+        return lista;
     }
 
     /**
@@ -87,5 +213,15 @@ public class VentaService {
         }
 
         return ventaGuardada;
+    }
+
+    @Override
+    public Venta guardarVenta(Venta venta) {
+        return ventaRepository.save(venta);
+    }
+
+    @Override
+    public Venta findById(Long id) {
+        return ventaRepository.findById(id).orElse(null);
     }
 }

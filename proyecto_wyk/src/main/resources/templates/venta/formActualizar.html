@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Venta</title>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-venta-form" class="formulario" method="POST">
+        <h1>Actualizar Venta</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idVenta" name="idVenta" th:value="${formActVenta.idVenta}">
+
+            <div class="campo">
+                <label for="numMesa">N° Mesa</label>
+                <div class="contenedor-input">
+                    <input type="number" id="numMesa" name="numMesa" th:value="${formActVenta.numeroMesa}" placeholder="Número mesa">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="descripcion">Descripción</label>
+                <div class="contenedor-input">
+                    <input type="text" id="descripcion" name="descripcion" th:value="${formActVenta.descripcion}" placeholder="Nombre">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoPedido">Estado Pedido</label>
+                <div class="contenedor-input">
+                    <select id="estadoPedido" name="estadoPedido">
+                        <option value="PENDIENTE" th:selected="${formActVenta.estadoPedido == 'PENDIENTE'}">PENDIENTE</option>
+                        <option value="PREPARACION" th:selected="${formActVenta.estadoPedido == 'PREPARACION'}">PREPARACIÓN</option>
+                        <option value="ENTREGADO" th:selected="${formActVenta.estadoPedido == 'ENTREGADO'}">ENTREGADO</option>
+                        <option value="CANCELADO" th:selected="${formActVenta.estadoPedido == 'CANCELADO'}">CANCELADO</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoPago">Estado Pago</label>
+                <div class="contenedor-input">
+                    <select id="estadoPago" name="estadoPago">
+                        <option value="PENDIENTE" th:selected="${formActVenta.estadoPago == 'PENDIENTE'}">PENDIENTE</option>
+                        <option value="PAGADO" th:selected="${formActVenta.estadoPago == 'PAGADO'}">PAGADO</option>
+                        <option value="CANCELADO" th:selected="${formActVenta.estadoPago == 'CANCELADO'}">CANCELADO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Venta
+        </button>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    const URL_UPDATE = /*[[@{/ventas/actualizar}]]*/ "/ventas/actualizar";
+    const URL_REDIRECT = /*[[@{/ventas}]]*/ "/ventas";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<script th:src="@{/js/venta/confirmUpdate.js}"></script>
+</body>
+</html>

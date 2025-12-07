@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const detalleVentaModal = document.getElementById('detalleVentaModal');
     const detalleVentaBody = document.getElementById('detalleVentaBody');
@@ -10,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const ventaId = button.getAttribute('data-id-venta');
 
         // Realizar la petición AJAX
-        fetch(`${APP_URL}ventas/getDetalleVentaAjax?id=${ventaId}`)
+        fetch(`${APP_URL}ventas/listarDetallesVentaModal?id=${ventaId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener el detalle de la venta.');
