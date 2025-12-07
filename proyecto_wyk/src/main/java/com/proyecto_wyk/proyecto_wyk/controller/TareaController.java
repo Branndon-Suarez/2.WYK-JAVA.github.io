@@ -153,7 +153,7 @@ public class TareaController {
         return "tarea/formActualizar";
     }
 
-<<<<<<< HEAD
+
     @PostMapping("/actualizar")
     @ResponseBody
     public Map<String, Object> actualizarTarea(
@@ -316,7 +316,7 @@ public class TareaController {
                 .body(new InputStreamResource(pdfStream));
     }
 
-=======
+
 //    @PostMapping("/actualizar")
 //    @ResponseBody
 //    public Map<String, Object> actualizarTarea(
@@ -378,5 +378,5 @@ public class TareaController {
 //                "message", "Usuario actualizado correctamente."
 //        );
 //    }
->>>>>>> 96c9ceafb92bc6de748e71b389eecde238a57e4d
+
 }

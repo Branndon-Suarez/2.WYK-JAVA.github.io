@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface ITareaService {
     List<Tarea> listarTarea();
-//    List<Tarea> listarTareasFiltrados(Map<String, String> params);
+    List<Tarea> listarTareasFiltradas(Map<String, String> params);
 
     long cantTareasExistentes();
     long cantTareasPendientes();
