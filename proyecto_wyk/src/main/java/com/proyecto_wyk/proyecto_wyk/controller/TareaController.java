@@ -11,6 +11,11 @@ import com.proyecto_wyk.proyecto_wyk.security.CustomUserDetails;
 import com.proyecto_wyk.proyecto_wyk.service.impl.TareaService;
 import com.proyecto_wyk.proyecto_wyk.service.impl.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,7 +23,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -167,7 +176,7 @@ public class TareaController {
         if (actualTarea == null) {
             return Map.of(
                     "success", false,
-                    "message", "El usuario no existe."
+                    "message", "La tarea no existe."
             );
         }
 
@@ -177,11 +186,11 @@ public class TareaController {
 
             return Map.of(
                     "success", false,
-                    "message", "Ya existe un usuario con ese número de documento."
+                    "message", "Ya existe esa tarea dentro del sistema."
             );
         }
 
-        actualTarea.setIdTarea(Long.valueOf(dto.getIdTarea()));
+        actualTarea.setIdTarea(Long.valueOf(dto.getIdTarea()));//ayuda branndon
         actualTarea.setTarea(dto.getTarea());
         actualTarea.setCategoria(dto.getCategoria());
         actualTarea.setDescripcion(dto.getDescripcion());
@@ -194,15 +203,116 @@ public class TareaController {
         if (usuario == null) {
             return Map.of(
                     "success", false,
-                    "message", "El rol seleccionado no existe.");
+                    "message", "El usuario seleccionado no existe.");
         }
-        actualTarea.setNombre(usuario);
+        actualTarea.setUsuarioAsignado(usuario);
 
         tareaService.guardarTarea(actualTarea);
 
         return Map.of(
                 "success", true,
-                "message", "Usuario actualizado correctamente."
+                "message", "Tarea actualizado correctamente."
         );
     }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public Map<String, Object> eliminarTarea(@RequestParam Long id) {
+        try {
+            tareaService.eliminarTarea(id);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Tarea eliminado correctamente."
+            );
+
+        } catch (DataIntegrityViolationException e) {
+            return Map.of(
+                    "success", false,
+                    "code", "FK_CONSTRAINT",
+                    "message", "No es posible eliminar esta tarea porque está relacionda con otros registros."
+            );
+
+        } catch (Exception e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Error al eliminar la tarea: " + e.getMessage()
+            );
+        }
+    }
+
+    @GetMapping("/generateReportPDF")
+    public ResponseEntity<InputStreamResource> generarPDF(@RequestParam Map<String, String> params) throws Exception {
+
+        List<Tarea> listaTarea = tareaService.listarTareasFiltradas(params);
+
+        StringBuilder html = new StringBuilder();
+        html.append("""
+                    <html>
+                    <head>
+                    <style>
+                        @page {
+                            size: A4 landscape;
+                            margin: 20mm;
+                        }
+                        table { width:100%; border-collapse: collapse; }
+                        th, td { border:1px solid #ccc; padding:8px; }
+                        th { background-color:#f2f2f2; }
+                    </style>
+                    </head>
+                    <body>
+                    <h2>Reporte de Tareas</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Categoria</th>
+                                <th>Descripción</th>
+                                <th>Tiempo Estimado Horas</th>
+                                <th>Prioridad</th>
+                                <th>Estado Tarea</th>
+                                <th>Usuario Asignado</th>
+                                <th>Usuario Creador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                """);
+
+        for (Tarea t : listaTarea) {
+            html.append("<tr>")
+                    .append("<td>").append(t.getTarea()).append("</td>")
+                    .append("<td>").append(t.getCategoria()).append("</td>")
+                    .append("<td>").append(t.getDescripcion()).append("</td>")
+                    .append("<td>").append(t.getTiempoEstimadoHoras()).append("</td>")
+                    .append("<td>").append(t.getPrioridad()).append("</td>")
+                    .append("<td>").append(t.getEstadoTarea()).append("</td>")
+                    .append("<td>").append(t.getUsuarioAsignado().getNombre()).append("</td>")
+                    .append("<td>").append(t.getUsuarioCreador().getNombre()).append("</td>")
+                    .append("</tr>");
+        }
+
+        html.append("""
+                    </tbody>
+                    </table>
+                    </body>
+                    </html>
+                """);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(html.toString());
+        renderer.layout();
+        renderer.createPDF(os);
+
+        ByteArrayInputStream pdfStream = new ByteArrayInputStream(os.toByteArray());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=usuarios.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdfStream));
+    }
+
 }
