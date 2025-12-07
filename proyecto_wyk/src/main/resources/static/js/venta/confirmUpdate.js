@@ -1,11 +1,9 @@
 document.getElementById('update-venta-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const form = this;
-
     Swal.fire({
         title: '¿Estás seguro?',
-        text: 'Se actualizarán los datos de esta venta.',
+        text: 'Se actualizarán los datos de la venta.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -14,15 +12,29 @@ document.getElementById('update-venta-form').addEventListener('submit', function
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            const formData = new FormData(form);
 
-            fetch(APP_URL + 'ventas/update', {
+            const data = {
+                idVenta: parseInt(document.getElementById("idVenta").value),
+                numeroMesa: document.getElementById("numMesa").value ? parseInt(document.getElementById("numMesa").value) : null,
+                descripcion: document.getElementById("descripcion").value,
+                estadoPedido: document.getElementById("estadoPedido").value,
+                estadoPago: document.getElementById("estadoPago").value,
+            };
+
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
+            fetch(URL_UPDATE, {
                 method: 'POST',
-                body: formData
+                headers: headers,
+                body: JSON.stringify(data)
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('La respuesta de la red no fue exitosa');
+                    throw new Error('Error en la conexión con el servidor');
                 }
                 return response.json();
             })
@@ -30,11 +42,12 @@ document.getElementById('update-venta-form').addEventListener('submit', function
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Éxito!',
+                        title: '¡Actualizado!',
                         text: data.message
                     }).then(() => {
-                        window.location.href = APP_URL + 'ventas';
+                        window.location.href = URL_REDIRECT;
                     });
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -47,7 +60,7 @@ document.getElementById('update-venta-form').addEventListener('submit', function
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
-                    text: 'No se pudo contactar al servidor: ' + error.message
+                    text: error.message
                 });
             });
         }

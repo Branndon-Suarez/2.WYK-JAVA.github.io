@@ -216,6 +216,11 @@ public class VentaService implements IVentaService {
     }
 
     @Override
+    public Venta guardarVenta(Venta venta) {
+        return ventaRepository.save(venta);
+    }
+
+    @Override
     public Venta findById(Long id) {
         return ventaRepository.findById(id).orElse(null);
     }

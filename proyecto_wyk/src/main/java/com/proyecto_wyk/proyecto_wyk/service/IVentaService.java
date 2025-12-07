@@ -14,6 +14,7 @@ public interface IVentaService {
     List<Venta> listarVentasFiltradas(Map<String, String> params);
 
     Venta guardarVentaCompleta(VentaDTO ventaDTO);
+    Venta guardarVenta(Venta venta);
 
     Venta findById(Long id);
 }

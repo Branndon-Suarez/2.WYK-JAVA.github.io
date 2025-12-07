@@ -118,7 +118,10 @@
                             <span th:text="${#temporals.format(v.fechaHoraVenta, 'HH:mm:ss')}"></span>
                         </td>
                         <td th:text="${v.totalVenta}"></td>
-                        <td th:text="${v.numeroMesa}"></td>
+                        <td>
+                            <span th:if="${v.numeroMesa != null}" th:text="${v.numeroMesa}"></span>
+                            <span th:unless="${v.numeroMesa != null}" class="text-muted">N/A</span>
+                        </td>
                         <td th:text="${v.descripcion}"></td>
                         <td th:text="${v.usuario.nombre}"></td>
                         <td th:text="${v.estadoPedido}"></td>

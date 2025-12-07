@@ -2,6 +2,7 @@ package com.proyecto_wyk.proyecto_wyk.controller;
 
 import com.proyecto_wyk.proyecto_wyk.dto.rol.RolUpdateDTO;
 import com.proyecto_wyk.proyecto_wyk.dto.venta.VentaDTO;
+import com.proyecto_wyk.proyecto_wyk.dto.venta.VentaUpdateDTO;
 import com.proyecto_wyk.proyecto_wyk.entity.DetalleVenta;
 import com.proyecto_wyk.proyecto_wyk.entity.Rol;
 import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
@@ -137,14 +138,14 @@ public class VentaController {
     @GetMapping("/formAct/{id}")
     public String mostrarFormAct(@PathVariable Long id, Model model) {
         Venta venta = ventaService.findById(id);
-        model.addAttribute("formActRol", venta);
+        model.addAttribute("formActVenta", venta);
         return "venta/formActualizar";
     }
 
     @PostMapping("/actualizar")
     @ResponseBody
-    public Map<String, Object> actualizarRol(
-            @Valid @RequestBody RolUpdateDTO dto,
+    public Map<String, Object> actualizarVenta(
+            @Valid @RequestBody VentaUpdateDTO dto,
             BindingResult result
     ) {
         if (result.hasErrors()) {
@@ -159,32 +160,27 @@ public class VentaController {
             );
         }
 
+        Venta actualVenta = ventaService.findById(dto.getIdVenta());
 
-        Rol actualRol = service.buscarPorId(dto.getIdRol());
-
-        if (actualRol == null) {
+        if (actualVenta == null) {
             return Map.of(
                     "success", false,
-                    "message", "El rol no existe."
+                    "message", "La venta no existe."
             );
         }
 
-        if (service.existeRol(dto.getRol()) && !actualRol.getRol().equalsIgnoreCase(dto.getRol())) {
-            return Map.of(
-                    "success", false,
-                    "message", "Ya existe un rol con ese nombre."
-            );
-        }
+        actualVenta.setNumeroMesa(
+                (dto.getNumeroMesa() != null && !dto.getNumeroMesa().isEmpty()) ? Integer.parseInt(dto.getNumeroMesa()) : null
+        );
+        actualVenta.setDescripcion(dto.getDescripcion());
+        actualVenta.setEstadoPedido(dto.getEstadoPedido());
+        actualVenta.setEstadoPago(dto.getEstadoPago());
 
-        actualRol.setRol(dto.getRol());
-        actualRol.setClasificacion(clasificacionEnum);
-        actualRol.setEstadoRol(dto.getEstadoRol());
-
-        service.guardarRol(actualRol);
+        ventaService.guardarVenta(actualVenta);
 
         return Map.of(
                 "success", true,
-                "message", "Rol actualizado correctamente."
+                "message", "Venta actualizada correctamente."
         );
     }
 }

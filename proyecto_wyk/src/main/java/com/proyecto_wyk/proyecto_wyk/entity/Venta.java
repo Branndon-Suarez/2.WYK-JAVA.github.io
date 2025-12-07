@@ -18,8 +18,8 @@ public class Venta {
     @Column(name = "TOTAL_VENTA", nullable = false)
     private Double totalVenta;
 
-    @Column(name = "NUMERO_MESA")
-    private Integer numeroMesa; // Nullable
+    @Column(name = "NUMERO_MESA", nullable = true)
+    private Integer numeroMesa;
 
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;

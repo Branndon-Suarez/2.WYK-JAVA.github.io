@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
                         // Acciones POST
-                        .requestMatchers(HttpMethod.POST, "/ventas/guardar")
+                        .requestMatchers(HttpMethod.POST, "/ventas/guardar", "/ventas/actualizar")
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
 
