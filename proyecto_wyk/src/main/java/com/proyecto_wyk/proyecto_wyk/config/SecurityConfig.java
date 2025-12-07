@@ -73,9 +73,9 @@ public class SecurityConfig {
                         .hasAnyAuthority("ADMINISTRADOR", "COCINERO")
 
                         // -----------------------------------------------------------------
-                        // 🎯 5. REGLAS PARA PRODUCTO (VISTA Y API)
+                        // 🎯 5. REGLAS PARA VENTA (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
-                        .requestMatchers(HttpMethod.GET, "/ventas/crear")
+                        .requestMatchers(HttpMethod.GET, "/ventas", "/ventas/**")
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
                         // Acciones POST

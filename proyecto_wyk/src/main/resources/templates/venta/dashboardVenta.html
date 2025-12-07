@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headDashboard :: headDashboard}"></head>
+<body>
+<div class="app">
+    <!-- SIDEBAR -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <main class="main">
+        <!-- TOPBAR -->
+        <header>
+            <strong>PANADERÍA WYK — Panel Control</strong>
+
+            <div class="search">
+                <lord-icon
+                        src="https://cdn.lordicon.com/vhdgmtyj.json"
+                        trigger="hover"
+                        stroke="bold"
+                        colors="primary:#933e0d"
+                        style="width:50px;height:50px">
+                </lord-icon>
+
+                <input id="buscarRapido" placeholder="Buscar…"/>
+
+                <button type="button" class="btn btn-ghost"
+                        data-bs-toggle="modal" data-bs-target="#filtroAvanzadoModal">
+                    <i data-feather="sliders" style="width:18px;height:18px;color:#94a3b8;"></i>
+                </button>
+            </div>
+
+            <a th:href="@{/ventas/formGuardar}">
+                <button type="button" class="btn btn-primary">+ Nuevo pedido</button>
+            </a>
+        </header>
+
+
+        <div class="layout">
+            <!-- HERO -->
+            <section class="hero">
+                <div>
+                    <div class="hero-note">¡Buen día!</div>
+                    <h2>Bienvenidos a la pandería,
+                        <!--                            <span style="color:var(&#45;&#45;primary)" th:text="${userName}"></span>-->
+                    </h2>
+
+                    <div class="hero-note">Que el aroma del pan recién horneado te acompañe hoy 🍞</div>
+
+                    <div style="margin-top:12px; display:flex; gap:10px;">
+                        <button class="btn btn-ghost">Ver agenda</button>
+                    </div>
+                </div>
+
+                <div class="illus">
+                    <div class="floaty"></div>
+                    <div class="bread">🥖</div>
+                    <div class="croissant">🥐</div>
+                </div>
+            </section>
+
+
+            <!-- KPIs -->
+            <section class="stats">
+                <div class="stat">
+                    <div>
+                        <div class="muted">Ventas existentes</div>
+                        <div class="kpi" th:text="${cantidadVentasExistentes}"></div>
+                    </div>
+                    <div class="icon">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/oqhqyeud.json"
+                                trigger="hover"
+                                stroke="bold"
+                                colors="primary:#933e0d,secondary:#933e0d"
+                                style="width:40px;height:40px">
+                        </lord-icon>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- TABLA DE VENTAS -->
+            <div class="section-reportes">
+                <div class="table-header">
+                    <strong>Tabla de ventas</strong>
+                    <button type="button" id="generatePdfBtnVenta" style="display:flex; align-items:center;" class="btn btn-ghost btp-personalizado">
+                        <span>Generar PDF</span>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/gyyhoycg.json"
+                                trigger="hover"
+                                stroke="bold"
+                                colors="primary:#fff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                    </button>
+                </div>
+
+                <table id="tablaVentas" class="tabla-consultas">
+                    <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Número Mesa</th>
+                        <th>Descripción</th>
+                        <th>Registrada por</th>
+                        <th>Estado Pedido</th>
+                        <th>Estado Pago</th>
+                        <th colspan="2" style="text-align:center">Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <!-- SI HAY VENTAS -->
+                    <tr th:each="v : ${listaVentas}">
+                        <td>
+                            <span th:text="${#temporals.format(v.fechaHoraVenta, 'yyyy-MM-dd HH:mm:ss')}" class="fecha-completa" style="display:none;"></span>
+
+                            <span th:text="${#temporals.format(v.fechaHoraVenta, 'yyyy-MM-dd')}"></span><br>
+                            <span th:text="${#temporals.format(v.fechaHoraVenta, 'HH:mm:ss')}"></span>
+                        </td>
+                        <td th:text="${v.totalVenta}"></td>
+                        <td th:text="${v.numeroMesa}"></td>
+                        <td th:text="${v.descripcion}"></td>
+                        <td th:text="${v.usuario.nombre}"></td>
+                        <td th:text="${v.estadoPedido}"></td>
+                        <td th:text="${v.estadoPago}"></td>
+
+                        <td>
+                            <a th:href="@{/ventas/formAct/{id}(id=${v.idVenta})}"
+                               class="btn btn-sm btn-primary btn-actualizar">
+                                <lord-icon
+                                        src="https://cdn.lordicon.com/ibckyoan.json"
+                                        trigger="hover"
+                                        colors="primary:#ffffff"
+                                        style="width:30px;height:30px">
+                                </lord-icon>
+                            </a>
+                        </td>
+
+                        <td>
+                            <button
+                                    type="button"
+                                    class='btn btn-sm btn-primary btn-detalle-venta'
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detalleVentaModal"
+                                    th:data-id-venta="${v.idVenta}">
+                                Detalle
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SI NO HAY VENTAS -->
+                    <tr th:if="${#lists.isEmpty(listaVentas)}">
+                        <td colspan="9" style="text-align:center">No hay ventas disponibles.</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- MODAL CONSULTAS VENTAS-->
+        <div th:replace="~{/venta/modalConsultas :: modalConsultas}"></div>
+        <!-- MODAL CONSULTAS DETALLE DE CADA VENTA-->
+        <div th:replace="~{/venta/detalleVentaModal :: selectDetalleVentaModal}"></div>
+        <!-- FOOTER -->
+        <div th:replace="~{/layout/footers/footerDashboard :: footerDashboard}"></div>
+    </main>
+</div>
+
+<!-- LIBRERÍAS -->
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"
+        integrity="sha256-Lye89HGy1p3XhJT24hcvsoRw64Q4IOL5a7hdOflhjTA="
+        crossorigin="anonymous">
+</script>
+
+<!-- VARIABLES GLOBALES -->
+<script th:inline="javascript">
+    const APP_URL = /*[[${@environment.getProperty('app.url')}]]*/ '';
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<!-- JS DEL SISTEMA -->
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/logout.js}"></script>
+
+
+<!-- JS CRUD USUARIOS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/venta/selectDetalleVentaModal.js}"></script>
+<script th:src="@{/js/venta/confirmState.js}"></script>
+<script th:src="@{/js/venta/confirmDelete.js}"></script>
+
+<!-- BUSQUEDA Y PDF -->
+<script th:src="@{/js/venta/busquedaFiltro.js}"></script>
+<script th:src="@{/js/venta/PDFgenerateFilter.js}"></script>
+</body>
+</html>

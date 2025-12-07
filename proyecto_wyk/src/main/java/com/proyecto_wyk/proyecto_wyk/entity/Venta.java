@@ -15,6 +15,9 @@ public class Venta {
     @Column(name = "FECHA_HORA_VENTA", nullable = false)
     private LocalDateTime fechaHoraVenta;
 
+    @Column(name = "TOTAL_VENTA", nullable = false)
+    private Double totalVenta;
+
     @Column(name = "NUMERO_MESA")
     private Integer numeroMesa; // Nullable
 
@@ -26,9 +29,6 @@ public class Venta {
 
     @Column(name = "ESTADO_PAGO", length = 50, nullable = false)
     private String estadoPago;
-
-    @Column(name = "TOTAL_VENTA", nullable = false)
-    private Double totalVenta;
 
     // Relación ManyToOne con Usuario
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,6 +52,13 @@ public class Venta {
     }
     public void setFechaHoraVenta(LocalDateTime fechaHoraVenta) {
         this.fechaHoraVenta = fechaHoraVenta;
+    }
+
+    public Double getTotalVenta() {
+        return totalVenta;
+    }
+    public void setTotalVenta(Double totalVenta) {
+        this.totalVenta = totalVenta;
     }
 
     public Integer getNumeroMesa() {
@@ -80,13 +87,6 @@ public class Venta {
     }
     public void setEstadoPago(String estadoPago) {
         this.estadoPago = estadoPago;
-    }
-
-    public Double getTotalVenta() {
-        return totalVenta;
-    }
-    public void setTotalVenta(Double totalVenta) {
-        this.totalVenta = totalVenta;
     }
 
     public Usuario getUsuario() {
