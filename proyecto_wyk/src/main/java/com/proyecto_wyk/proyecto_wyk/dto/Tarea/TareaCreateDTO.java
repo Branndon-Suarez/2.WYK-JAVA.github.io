@@ -99,11 +99,13 @@ public class TareaCreateDTO {
 
     public Integer getIdUsuarioAsignado() {
         return idUsuarioAsignado;
+
     }
 
     public void setIdUsuarioAsignado(Integer idUsuarioAsignado) {
         this.idUsuarioAsignado = idUsuarioAsignado;
     }
-
-
 }
+
+
+
