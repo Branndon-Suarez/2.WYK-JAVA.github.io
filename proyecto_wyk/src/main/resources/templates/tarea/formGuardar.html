@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/heads/headForm :: headForm}"></head>
 
-<title>Crear Usuario</title>
+<title>Crear Tarea</title>
 
 <body>
 <!-- Sidebar -->
@@ -14,21 +14,21 @@
     </button>
 
     <form id="create-tarea-form" class="formulario" method="post">
-        <h1>Crear Usuario</h1>
+        <h1>Crear Tarea</h1>
 
         <div class="grupo-formulario">
             <div class="campo">
-                <label for="tarea">tarea</label>
+                <label for="tarea">Tarea</label>
                 <div class="contenedor-input">
-                    <input type="text" id="tarea" name="tarea" placeholder="Digite la tarea.">
+                    <input type="text" id="tarea" name="tarea" placeholder="Ingresa el nombre de la tarea">
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="categoria">Categoria</label>
+                <label for="categoria">Categoría</label>
                 <div class="contenedor-input">
-                    <input type="text" id="categoria" name="categoria" placeholder="Ingresa la categoria de la tarea.">
+                    <input type="text" id="categoria" name="categoria" placeholder="Ingresa la categoría">
                     <div class="resalte-input"></div>
                 </div>
             </div>
@@ -36,15 +36,15 @@
             <div class="campo">
                 <label for="descripcion">Descripción</label>
                 <div class="contenedor-input">
-                    <input type="text" id="descripcion" name="descripcion" placeholder="Ingrese la descripcion de la tarea.">
+                    <input type="text" id="descripcion" name="descripcion" placeholder="Ingresa la descripción">
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="tiempoEstimadoHoras">Tiempo Estimado</label>
+                <label for="tiempo">Tiempo (horas)</label>
                 <div class="contenedor-input">
-                    <input type="number" id="tiempoEstimadoHoras" name="tiempoEstimadoHoras" placeholder="Ingresa el tiempo estimado de la tarea a desarrollar.">
+                    <input type="number" id="tiempo" name="tiempo" placeholder="Ingresa el tiempo">
                     <div class="resalte-input"></div>
                 </div>
             </div>
@@ -63,27 +63,15 @@
             </div>
 
             <div class="campo">
-                <label for="estadoTarea">Estado Tarea</label>
-                <div class="contenedor-input">
-                    <select id="estadoTarea" name="estadoTarea">
-                        <option value="">Seleccione un estado</option>
-                        <option value="PENDIENTE">PENDIENTE</option>
-                        <option value="COMPLETADA">COMPLETADA</option>
-                        <option value="CANCELADA">CANCELADA</option>
-                    </select>
-                    <div class="resalte-input"></div>
-                </div>
-            </div>
-
-            <div class="campo">
-                <label for="idUsuarioAsignado">Rol</label>
+                <label for="usuario_fk">Al empleado</label>
                 <div class="input-group">
-                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe" id="select-tarea-btn" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
-                        <i data-feather="search"></i>
+                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe"
+                            id="select-user-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalUsuarios"> <i data-feather="search"></i>
                     </button>
-                    <input type="text" id="usuario_display" class="form-control" placeholder="Selecciona un usuario" readonly required>
-                    <input type="hidden" id="idUsuarioAsignado" name="idUsuarioAsignado">
-                </div>
+                    <input type="text" id="rol_display" class="form-control" placeholder="Asigna un usuario a esta tarea" readonly>
+                    <input type="hidden" id="usuario_fk" name="idUsuarioAsignado"> </div>
             </div>
         </div>
 
@@ -98,7 +86,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Usuario</h5>
+                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Empleado a Asignar</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -106,15 +94,10 @@
                     <table class="table table-hover" id="tablaUsuariosModal">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Tarea</th>
-                            <th>Categoria</th>
-                            <th>Descripcion</th>
-                            <th>Tiempo Estimado</th>
-                            <th>Prioridad</th>
-                            <th>Estado Tarea</th>
-                            <th>Usuario Asignado</th>
-                            <th>Usuario Creador</th>
+                            <th>N° Documento</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Acción</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -139,8 +122,7 @@
     const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
     const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
 </script>
-<script th:src="@{/js/tareas/confirmCreate.js}"></script>
-<script th:src="@{/js/tareas/selectRolModal.js}"></script>
-
+<script th:src="@{/js/tarea/confirmCreate.js}"></script>
+<script th:src="@{/js/tarea/selectUserModal.js}"></script>
 </body>
 </html>
