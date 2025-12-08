@@ -182,16 +182,19 @@ public class TareaController {
         }
 
         // validar documento duplicado
-        if (tareaService.existeTarea(dto.getTarea())
-                && !actualTarea.getTarea().equals(dto.getTarea())) {
+        if (!actualTarea.getTarea().equalsIgnoreCase(dto.getTarea())) { // SOLO si el nombre cambió...
 
-            return Map.of(
-                    "success", false,
-                    "message", "Ya existe esa tarea dentro del sistema."
-            );
+            // ...verifica si el nuevo nombre ya existe en el sistema
+            if (tareaService.existeTarea(dto.getTarea())) {
+                return Map.of(
+                        "success", false,
+                        "message", "Ya existe esa tarea dentro del sistema."
+                );
+            }
         }
+// Si el nombre no cambió, o si cambió pero no existe, el flujo de actualización continúa.
 
-        actualTarea.setIdTarea(Long.valueOf(dto.getIdTarea()));//ayuda branndon
+
         actualTarea.setTarea(dto.getTarea());
         actualTarea.setCategoria(dto.getCategoria());
         actualTarea.setDescripcion(dto.getDescripcion());

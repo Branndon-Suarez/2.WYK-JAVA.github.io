@@ -2,17 +2,18 @@ document.getElementById("create-tarea-form").addEventListener("submit", function
     e.preventDefault(); // Evita el envío normal
 
     const data = {
-        tarea: document.getElementById("tarea").value,
-        categoria: document.getElementById("categoria").value,
-        descripcion: document.getElementById("descripcion").value,
-        tiempoEstimadoHoras: document.getElementById("tiempo").value,
-        prioridad: document.getElementById("prioridad").value,
-        idUsuarioAsignado: document.getElementById("usuario_fk").value
+        tarea: document.getElementById("tarea")
+        numDoc: document.getElementById("numDoc").value,
+        nombre: document.getElementById("nombre").value,
+        passwordUsuario: document.getElementById("password").value,
+        telUsuario: document.getElementById("telefono").value,
+        emailUsuario: document.getElementById("email").value,
+        rolId: document.getElementById("rol_fk").value
     };
 
     Swal.fire({
         title: "¿Crear tarea?",
-        text: "Se registrará un nuevo tarea en el sistema.",
+        text: "Se registrará una nueva tarera dentro del sistema.",
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Sí, crear",
