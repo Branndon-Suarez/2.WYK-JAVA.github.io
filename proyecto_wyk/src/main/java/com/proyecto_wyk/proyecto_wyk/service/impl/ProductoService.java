@@ -18,4 +18,8 @@ public class ProductoService {
         // Usamos el método de Query Method del repositorio
         return productoRepository.findByEstadoProductoTrue();
     }
+
+    public Producto findById(Long id) {
+        return productoRepository.findById(id).orElse(null);
+    }
 }
