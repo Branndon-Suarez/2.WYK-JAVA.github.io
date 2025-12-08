@@ -5,7 +5,6 @@
 <title>Actualizar Tarea</title>
 
 <body>
-<!-- Sidebar -->
 <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
 <main class="principal">
@@ -13,98 +12,104 @@
         <i data-feather="arrow-left"></i> Volver
     </button>
 
-    <form id="update-usuario-form" class="formulario" method="POST">
-        <h1>Actualizar Usuario</h1>
+    <form id="update-tarea-form" class="formulario" method="POST">
+        <h1>Actualizar Tarea</h1>
 
         <div class="grupo-formulario">
             <input type="hidden" id="idTarea" name="idTarea" th:value="${formActTarea.idTarea}">
 
             <div class="campo">
-                <label for="numDoc">N° documento</label>
+                <label for="tarea">Nombre de la Tarea</label>
                 <div class="contenedor-input">
-                    <input type="number" id="numDoc" name="numDoc" th:value="${formActUsuario.numDoc}" placeholder="Número documento">
+                    <input type="text" id="tarea" name="tarea" th:value="${formActTarea.tarea}" placeholder="Nombre de la Tarea">
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="nombre">Nombre</label>
+                <label for="categoria">Categoría</label>
                 <div class="contenedor-input">
-                    <input type="text" id="nombre" name="nombre" th:value="${formActUsuario.nombre}" placeholder="Nombre">
+                    <input type="text" id="categoria" name="categoria" th:value="${formActTarea.categoria}" placeholder="Categoría">
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="passwordUsuario">Contraseña</label>
+                <label for="descripcion">Descripción</label>
                 <div class="contenedor-input">
-                    <input type="password" id="passwordUsuario" name="passwordUsuario" placeholder="Será la misma si no se actualiza">
+                    <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción de la tarea" th:text="${formActTarea.descripcion}"></textarea>
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="telUsuario">Teléfono</label>
+                <label for="tiempoEstimadoHoras">Tiempo Estimado (Horas)</label>
                 <div class="contenedor-input">
-                    <input type="tel" id="telUsuario" name="telUsuario" th:value="${formActUsuario.telUsuario}" placeholder="Teléfono">
+                    <input type="number" step="0.1" id="tiempoEstimadoHoras" name="tiempoEstimadoHoras" th:value="${formActTarea.tiempoEstimadoHoras}" placeholder="Ej: 4.5">
                     <div class="resalte-input"></div>
                 </div>
             </div>
 
             <div class="campo">
-                <label for="emailUsuario">Email</label>
+                <label for="prioridad">Prioridad</label>
                 <div class="contenedor-input">
-                    <input type="email" id="emailUsuario" name="emailUsuario" th:value="${formActUsuario.emailUsuario}" placeholder="Email">
-                    <div class="resalte-input"></div>
-                </div>
-            </div>
-
-            <div class="campo">
-                <label for="rol_fk">Rol</label>
-                <div class="input-group">
-                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe" id="select-rol-btn" data-bs-toggle="modal" data-bs-target="#modalRoles">
-                        <i data-feather="search"></i>
-                    </button>
-                    <!--Muestro con th:value el nombre del rol correspondiente al registro del usuario-->
-                    <input type="text" id="rol_display" class="form-control" th:value="${formActUsuario.rol.rol}" placeholder="Selecciona un rol" readonly>
-                    <!--Pero almaceno es id rol correspondiente al registro del usuario-->
-                    <input type="hidden" id="rol_fk" name="rol_fk" th:value="${formActUsuario.rol.idRol}">
-                </div>
-            </div>
-
-            <div class="campo">
-                <label for="estadoUsuario">Estado</label>
-                <div class="contenedor-input">
-                    <select id="estadoUsuario" name="estadoUsuario">
-                        <option value="true" th:selected="${formActUsuario.estadoUsuario}">✓ Activo</option>
-                        <option value="false" th:selected="${!formActUsuario.estadoUsuario}">✗ Inactivo</option>
+                    <select id="prioridad" name="prioridad">
+                        <option value="BAJA" th:selected="${formActTarea.prioridad.name() == 'BAJA'}">Baja</option>
+                        <option value="MEDIA" th:selected="${formActTarea.prioridad.name() == 'MEDIA'}">Media</option>
+                        <option value="ALTA" th:selected="${formActTarea.prioridad.name() == 'ALTA'}">Alta</option>
                     </select>
                 </div>
             </div>
+
+            <div class="campo">
+                <label for="estadoTarea">Estado</label>
+                <div class="contenedor-input">
+                    <select id="estadoTarea" name="estadoTarea">
+                        <option value="PENDIENTE" th:selected="${formActTarea.estadoTarea.name() == 'PENDIENTE'}">Pendiente</option>
+                        <option value="COMPLETADA" th:selected="${formActTarea.estadoTarea.name() == 'COMPLETADA'}">Completada</option>
+                        <option value="CANCELADA" th:selected="${formActTarea.estadoTarea.name() == 'CANCELADA'}">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="idUsuarioAsignado">Usuario Asignado</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe" id="select-usuario-btn" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
+                        <i data-feather="search"></i>
+                    </button>
+                    <input type="text" id="usuario_display" class="form-control"
+                           th:value="${formActTarea.usuarioAsignado.nombre}"
+                           placeholder="Selecciona un usuario" readonly>
+                    <input type="hidden" id="idUsuarioAsignado" name="idUsuarioAsignado"
+                           th:value="${formActTarea.usuarioAsignado.idUsuario}">
+                </div>
+            </div>
+
         </div>
 
         <button type="submit">
             <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
-            Actualizar Usuario
+            Actualizar Tarea
         </button>
     </form>
 </main>
 
-<div class="modal fade" id="modalRoles" tabindex="-1" aria-labelledby="modalRolesLabel" aria-hidden="true">
+<div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalRolesLabel">Seleccionar Rol</h5>
+                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Usuario Asignado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table class="table table-hover" id="tablaRolesModal">
+                    <table class="table table-hover" id="tablaUsuariosModal">
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Rol</th>
-                            <th>Clasificación</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
                             <th>Acción</th>
                         </tr>
                         </thead>
@@ -121,20 +126,21 @@
 <script src="https://cdn.lordicon.com/lordicon.js"></script>
 <script src="https://unpkg.com/feather-icons"></script>
 
-<script th:src="@{/js/usuario/usuario.js}"></script>
+<script th:src="@{/js/tarea/tarea.js}"></script>
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/sweetalert2.all.min.js}"></script>
 
 <script th:inline="javascript">
-    const URL_UPDATE = /*[[@{/usuarios/actualizar}]]*/ "/usuarios/actualizar";
-    const URL_REDIRECT = /*[[@{/usuarios}]]*/ "/usuarios";
+    // 11. Cambiar rutas de USUARIOS a TAREAS
+    const URL_UPDATE = /*[[@{/tareas/actualizar}]]*/ "/tareas/actualizar";
+    const URL_REDIRECT = /*[[@{/tareas}]]*/ "/tareas";
     const APP_URL = /*[[@{/}]]*/ "/";
 
     const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
     const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
 </script>
 
-<script th:src="@{/js/usuario/confirmUpdate.js}"></script>
-<script th:src="@{/js/usuario/selectRolModal.js}"></script>
+<script th:src="@{/js/tarea/confirmUpdate.js}"></script>
+<script th:src="@{/js/tarea/selectUsuarioModal.js}"></script>
 </body>
 </html>
