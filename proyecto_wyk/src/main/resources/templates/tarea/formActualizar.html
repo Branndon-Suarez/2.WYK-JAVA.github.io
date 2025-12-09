@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Tarea</title>
+
+<body>
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-tarea-form" class="formulario" method="POST">
+        <h1>Actualizar Tarea</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idTarea" name="idTarea" th:value="${formActTarea.idTarea}">
+
+            <div class="campo">
+                <label for="tarea">Nombre de la Tarea</label>
+                <div class="contenedor-input">
+                    <input type="text" id="tarea" name="tarea" th:value="${formActTarea.tarea}" placeholder="Nombre de la Tarea">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="categoria">Categoría</label>
+                <div class="contenedor-input">
+                    <input type="text" id="categoria" name="categoria" th:value="${formActTarea.categoria}" placeholder="Categoría">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="descripcion">Descripción</label>
+                <div class="contenedor-input">
+                    <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción de la tarea" th:text="${formActTarea.descripcion}"></textarea>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="tiempoEstimadoHoras">Tiempo Estimado (Horas)</label>
+                <div class="contenedor-input">
+                    <input type="number" step="0.1" id="tiempoEstimadoHoras" name="tiempoEstimadoHoras" th:value="${formActTarea.tiempoEstimadoHoras}" placeholder="Ej: 4.5">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="prioridad">Prioridad</label>
+                <div class="contenedor-input">
+                    <select id="prioridad" name="prioridad">
+                        <option value="BAJA" th:selected="${formActTarea.prioridad.name() == 'BAJA'}">Baja</option>
+                        <option value="MEDIA" th:selected="${formActTarea.prioridad.name() == 'MEDIA'}">Media</option>
+                        <option value="ALTA" th:selected="${formActTarea.prioridad.name() == 'ALTA'}">Alta</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoTarea">Estado</label>
+                <div class="contenedor-input">
+                    <select id="estadoTarea" name="estadoTarea">
+                        <option value="PENDIENTE" th:selected="${formActTarea.estadoTarea.name() == 'PENDIENTE'}">Pendiente</option>
+                        <option value="COMPLETADA" th:selected="${formActTarea.estadoTarea.name() == 'COMPLETADA'}">Completada</option>
+                        <option value="CANCELADA" th:selected="${formActTarea.estadoTarea.name() == 'CANCELADA'}">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="idUsuarioAsignado">Usuario Asignado</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe" id="select-usuario-btn" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
+                        <i data-feather="search"></i>
+                    </button>
+                    <input type="text" id="usuario_display" class="form-control"
+                           th:value="${formActTarea.usuarioAsignado.nombre}"
+                           placeholder="Selecciona un usuario" readonly>
+                    <input type="hidden" id="idUsuarioAsignado" name="idUsuarioAsignado"
+                           th:value="${formActTarea.usuarioAsignado.idUsuario}">
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Tarea
+        </button>
+    </form>
+</main>
+
+<div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Usuario Asignado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tablaUsuariosModal">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script th:src="@{/js/tarea/tarea.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    // 11. Cambiar rutas de USUARIOS a TAREAS
+    const URL_UPDATE = /*[[@{/tareas/actualizar}]]*/ "/tareas/actualizar";
+    const URL_REDIRECT = /*[[@{/tareas}]]*/ "/tareas";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<script th:src="@{/js/tarea/confirmUpdate.js}"></script>
+<script th:src="@{/js/tarea/selectUsuarioModal.js}"></script>
+</body>
+</html>
