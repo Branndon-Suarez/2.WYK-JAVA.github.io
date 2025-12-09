@@ -14,15 +14,51 @@ document.getElementById('update-tarea-form').addEventListener('submit', function
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            const formData = new FormData(form);
 
-            fetch(APP_URL + 'tareas/update', {
+            // --- INICIO DE LA CORRECCIÓN: CONVERSIÓN A JSON ---
+            const formData = new FormData(form);
+            const jsonData = {};
+
+            // Convertir FormData a un objeto JavaScript simple
+            for (const [key, value] of formData.entries()) {
+                // Asegurar que los campos numéricos (Long, Integer, Float) se envíen como números
+                if (key === 'idUsuarioAsignado') {
+                    jsonData[key] = parseInt(value, 10);
+                } else if (key === 'idTarea' || key === 'tiempoEstimadoHoras') {
+                    jsonData[key] = parseFloat(value);
+                } else {
+                    jsonData[key] = value;
+                }
+            }
+
+            // Asegúrate de que las constantes CSRF_HEADER y CSRF_TOKEN estén definidas en el HTML
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            // Añadir cabeceras CSRF si están disponibles
+            if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                 headers[CSRF_HEADER] = CSRF_TOKEN;
+            }
+            // --- FIN DE LA CORRECCIÓN ---
+
+
+            // CORRECCIÓN DE LA URL: Se usa 'tareas/actualizar' y se envía JSON
+            fetch(URL_UPDATE, {
                 method: 'POST',
-                body: formData
+                headers: headers, // Usar las cabeceras JSON y CSRF
+                body: JSON.stringify(jsonData) // Enviar el cuerpo como JSON
             })
             .then(response => {
+                // Modificación: Leer el error JSON si la respuesta no es OK
                 if (!response.ok) {
-                    throw new Error('La respuesta de la red no fue exitosa');
+                    // Intenta leer el cuerpo de la respuesta para obtener un mensaje de error detallado (e.g., validación)
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'Error desconocido del servidor (' + response.status + ').');
+                    }).catch(() => {
+                        // Si falla la lectura del JSON (ej: error 500), devuelve un error genérico
+                        throw new Error('Error de servidor. Código de estado HTTP: ' + response.status);
+                    });
                 }
                 return response.json();
             })
@@ -33,7 +69,7 @@ document.getElementById('update-tarea-form').addEventListener('submit', function
                         title: '¡Éxito!',
                         text: data.message
                     }).then(() => {
-                        window.location.href = APP_URL + 'tareas';
+                        window.location.href = URL_REDIRECT; // Redirige usando la constante corregida
                     });
                 } else {
                     Swal.fire({
