@@ -1,9 +1,12 @@
 package com.proyecto_wyk.proyecto_wyk.service.impl;
 
 import com.proyecto_wyk.proyecto_wyk.dto.compra.CompraDTO;
+import com.proyecto_wyk.proyecto_wyk.dto.compra.DetalleCompraModalDTO;
 import com.proyecto_wyk.proyecto_wyk.dto.compra.ItemCompraDTO;
 import com.proyecto_wyk.proyecto_wyk.entity.*;
 import com.proyecto_wyk.proyecto_wyk.repository.CompraRepository;
+import com.proyecto_wyk.proyecto_wyk.repository.DetalleCompraMateriaPrimaRepository;
+import com.proyecto_wyk.proyecto_wyk.repository.DetalleCompraProductoRepository;
 import com.proyecto_wyk.proyecto_wyk.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,18 @@ public class CompraService {
     private final ProductoService productoService;
     private final UsuarioRepository usuarioRepository;
 
-    public CompraService(CompraRepository compraRepository, MateriaPrimaService materiaPrimaService, ProductoService productoService, UsuarioRepository usuarioRepository) {
+    private final DetalleCompraMateriaPrimaRepository detalleMPRepository;
+    private final DetalleCompraProductoRepository detalleProdRepository;
+
+    public CompraService(CompraRepository compraRepository, MateriaPrimaService materiaPrimaService, ProductoService productoService, UsuarioRepository usuarioRepository, DetalleCompraMateriaPrimaRepository detalleMPRepository,
+                         DetalleCompraProductoRepository detalleProdRepository) {
         this.compraRepository = compraRepository;
         this.materiaPrimaService = materiaPrimaService;
         this.productoService = productoService;
         this.usuarioRepository = usuarioRepository;
+
+        this.detalleMPRepository = detalleMPRepository;
+        this.detalleProdRepository = detalleProdRepository;
     }
 
     public List<Compra> listarCompra() {
@@ -33,6 +43,50 @@ public class CompraService {
 
     public long cantidadComprasExistentes() {
         return compraRepository.count();
+    }
+
+    public List<DetalleCompraModalDTO> findDetallesByIdCompra(Long idCompra) {
+        List<DetalleCompraModalDTO> detallesUnificados = new ArrayList<>();
+
+        // 1. Obtener y Mapear Detalles de Materia Prima
+        List<DetalleCompraMateriaPrima> detallesMP =
+                detalleMPRepository.findByCompra_IdCompra(idCompra);
+
+        for (DetalleCompraMateriaPrima detalleMP : detallesMP) {
+            Double subTotal = detalleMP.getSubTotalMatPrimaComprada().doubleValue();
+            Double cantidad = detalleMP.getCantidadMatPrimaComprada().doubleValue();
+
+            Double precioUnitario = (cantidad != 0) ? subTotal / cantidad : 0.0;
+
+            detallesUnificados.add(new DetalleCompraModalDTO(
+                    "Materia Prima",
+                    detalleMP.getMateriaPrima().getNombreMateriaPrima(),
+                    detalleMP.getCantidadMatPrimaComprada().intValue(),
+                    precioUnitario,
+                    subTotal
+            ));
+        }
+
+        // 2. Obtener y Mapear Detalles de Producto
+        List<DetalleCompraProducto> detallesProd =
+                detalleProdRepository.findByCompra_IdCompra(idCompra);
+
+        for (DetalleCompraProducto detalleProd : detallesProd) {
+            Double subTotal = detalleProd.getSubTotalProdComprado().doubleValue();
+            Double cantidad = detalleProd.getCantidadProdComprado().doubleValue();
+
+            Double precioUnitario = (cantidad != 0) ? subTotal / cantidad : 0.0;
+
+            detallesUnificados.add(new DetalleCompraModalDTO(
+                    "Producto",
+                    detalleProd.getProducto().getNombreProducto(),
+                    detalleProd.getCantidadProdComprado().intValue(), // Convertir a Integer
+                    precioUnitario,
+                    subTotal // Ya es Double
+            ));
+        }
+
+        return detallesUnificados;
     }
 
     @Transactional
