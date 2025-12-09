@@ -37,10 +37,11 @@
             <div class="campo">
                 <label for="descripcion">Descripción</label>
                 <div class="contenedor-input">
-                    <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción de la tarea" th:text="${formActTarea.descripcion}"></textarea>
+                    <input type="text" id="descripcion" name="descripcion" th:value="${formActTarea.descripcion}" placeholder="Descripción de la tarea">
                     <div class="resalte-input"></div>
                 </div>
             </div>
+
 
             <div class="campo">
                 <label for="tiempoEstimadoHoras">Tiempo Estimado (Horas)</label>
