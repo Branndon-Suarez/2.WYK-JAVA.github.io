@@ -142,6 +142,7 @@ public class TareaController {
                 "message", "Tarea registrada correctamente."
         );
     }
+
     @GetMapping("/formAct/{id}")
     public String mostrarFormActualizar(@PathVariable Long id, Model model) {
 

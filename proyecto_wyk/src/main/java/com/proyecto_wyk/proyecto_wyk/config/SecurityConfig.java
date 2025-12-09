@@ -56,7 +56,7 @@ public class SecurityConfig {
                         // 🎯 3. REGLAS PARA TAREAS (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
                         .requestMatchers(HttpMethod.GET, "/tareas", "/tareas/**")
-                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+                        .hasAnyAuthority("ADMINISTRADOR")
 
                         // Acciones POST
                         .requestMatchers(HttpMethod.POST, "/tareas/guardar", "/tareas/actualizar", "/tareas/delete", "/tareas/updateState")
@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .hasAnyAuthority("ADMINISTRADOR")
 
                         // Acciones POST
-                        .requestMatchers(HttpMethod.POST, "/tareas/guardar", "/tareas/actualizar", "/tareas/delete", "/tareas/updateState")
+                        .requestMatchers(HttpMethod.POST, "/productos/guardar", "/productos/actualizar", "/productos/delete", "/productos/updateState")
                         .hasAnyAuthority("ADMINISTRADOR", "COCINERO")
 
                         // -----------------------------------------------------------------
@@ -86,11 +86,11 @@ public class SecurityConfig {
                         // 🎯 6. REGLAS PARA COMPRA (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
                         .requestMatchers(HttpMethod.GET, "/compras", "/compras/**")
-                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+                        .hasAnyAuthority("ADMINISTRADOR")
 
                         // Acciones POST
                         .requestMatchers(HttpMethod.POST, "/compras/guardar", "/compras/actualizar")
-                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+                        .hasAnyAuthority("ADMINISTRADOR")
 
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()

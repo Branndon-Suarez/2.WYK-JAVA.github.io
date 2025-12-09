@@ -75,11 +75,9 @@ function renderizarUsuarios() {
             const id = e.target.dataset.id;
             const nombre = e.target.dataset.nombre;
 
-            // --- CORRECCIÓN APLICADA AQUÍ ---
-            // Asignar el ID al campo oculto del formulario
-            document.getElementById('idUsuarioAsignado').value = id;
-            // Asignar el nombre al campo de visualización del formulario
-            document.getElementById('usuario_display').value = nombre;
+            // Asignar al campo oculto y al campo de visualización del formulario de Tarea
+            document.getElementById('usuario_fk').value = id;// <-- ID al campo oculto
+            document.getElementById('rol_display').value = nombre;
             // ----------------------------------
         });
     });

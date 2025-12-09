@@ -2,19 +2,51 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Denegado - 403</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        .error-container { max-width: 600px; margin: 0 auto; border: 1px solid #ccc; padding: 30px; border-radius: 8px; }
-        h1 { color: #dc3545; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/error403.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
 <div class="error-container">
-    <h1>🚫 Error 403: Acceso Denegado</h1>
-    <p>No tienes permiso para acceder a este recurso. Tu rol actual ( <span th:text="${#authentication.principal.authorities[0].authority}"></span> ) no está autorizado para esta operación.</p>
+    <div class="floating-icon icon-1">
+        <i class="fas fa-bread-slice"></i>
+    </div>
+    <div class="floating-icon icon-2">
+        <i class="fas fa-cookie"></i>
+    </div>
+    <div class="floating-icon icon-3">
+        <i class="fas fa-croissant"></i>
+    </div>
+    <div class="floating-icon icon-4">
+        <i class="fas fa-cake-candles"></i>
+    </div>
+
+    <div class="main-icon-container">
+        <div class="orbital-ring ring-1"></div>
+        <div class="orbital-ring ring-2"></div>
+        <div class="icon-circle">
+            <div class="main-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+    </div>
+
+    <h1>Error 403: Acceso Denegado</h1>
+
+    <p>No tienes permiso para acceder a este recurso. Tu rol actual (<span class="role-badge" th:text="${#authentication?.authorities?.![authority]?.toString() ?: 'NO AUTENTICADO'}">USUARIO</span>) no está autorizado para esta operación.</p>
+
     <p>Si crees que esto es un error, contacta al administrador del sistema.</p>
-    <a th:href="@{/dashboard}" class="btn btn-primary">Volver al Dashboard</a>
+
+    <div class="btn-container">
+        <a th:href="@{/dashboard}" class="btn-primary">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver al Dashboard</span>
+        </a>
+    </div>
 </div>
+
+<script th:src="@{/js/error403/error403.js}"></script>
 </body>
 </html>
