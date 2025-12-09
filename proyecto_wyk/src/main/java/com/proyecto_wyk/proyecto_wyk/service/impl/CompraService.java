@@ -177,4 +177,12 @@ public class CompraService {
 
         return compraGuardada.getIdCompra();
     }
+
+    public Compra guardarCompra(Compra venta) {
+        return compraRepository.save(venta);
+    }
+
+    public Compra findById(Long id) {
+        return compraRepository.findById(id).orElse(null);
+    }
 }

@@ -18,12 +18,12 @@ const btnGuardarCompra = document.getElementById("btnGuardarCompra");
 // Modales de Compra (IDs del HTML de Thymeleaf)
 const modalMateriaPrima = document.getElementById("modalMateriaPrima");
 const listaMateriaPrima = document.getElementById("listaMateriaPrima");
-const buscarMateriaPrimaInput = document.getElementById("buscarMateriaPrima"); // 🔑 Nombre ajustado
+const buscarMateriaPrimaInput = document.getElementById("buscarMateriaPrima");
 const btnCerrarModalMP = document.getElementById("btnCerrarModalMP");
 
 const modalProductos = document.getElementById("modalProductos");
 const listaProductos = document.getElementById("listaProductos");
-const buscarProductoInput = document.getElementById("buscarProducto"); // 🔑 Nombre ajustado
+const buscarProductoInput = document.getElementById("buscarProducto");
 const btnCerrarModalProd = document.getElementById("btnCerrarModalProd");
 
 // ------------------ FUNCIONES AUXILIARES DE MODALES ------------------
@@ -434,7 +434,6 @@ function actualizarTabla() {
 }
 
 // ------------------ GUARDAR COMPRA ------------------
-
 async function guardarCompra(e) {
     e.preventDefault();
 

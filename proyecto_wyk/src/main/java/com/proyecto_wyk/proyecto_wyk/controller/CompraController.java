@@ -1,9 +1,9 @@
 package com.proyecto_wyk.proyecto_wyk.controller;
 
 import com.proyecto_wyk.proyecto_wyk.dto.compra.CompraDTO;
+import com.proyecto_wyk.proyecto_wyk.dto.compra.CompraUpdateDTO;
 import com.proyecto_wyk.proyecto_wyk.dto.compra.DetalleCompraModalDTO;
-import com.proyecto_wyk.proyecto_wyk.entity.DetalleVenta;
-import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
+import com.proyecto_wyk.proyecto_wyk.entity.*;
 import com.proyecto_wyk.proyecto_wyk.security.CustomUserDetails;
 import com.proyecto_wyk.proyecto_wyk.service.impl.CompraService;
 import com.proyecto_wyk.proyecto_wyk.service.impl.MateriaPrimaService;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -154,7 +155,6 @@ public class CompraController {
         return "compra/compraCompleta";
     }
 
-    // --- ENDPOINT PARA GUARDAR COMPRA (POST AJAX: 'compras/create') ---
     @PostMapping("/guardar")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> guardarCompra(
@@ -191,5 +191,69 @@ public class CompraController {
                     "message", "Error interno del servidor al procesar la compra."
             ));
         }
+    }
+
+    @GetMapping("/formAct/{id}")
+    public String mostrarFormAct(@PathVariable Long id, Model model) {
+        // 1. Buscar la Compra por ID
+        Compra compra = compraService.findById(id);
+
+        // 2. Pasar la Compra al modelo (usando la variable Thymeleaf correcta)
+        model.addAttribute("formActCompra", compra);
+
+        // 3. Retornar la plantilla
+        return "compra/formActualizar"; // Asegúrate que esta sea la ruta correcta a tu HTML
+    }
+
+    @PostMapping("/actualizar")
+    @ResponseBody
+    public Map<String, Object> actualizarCompra(
+            @Valid @RequestBody CompraUpdateDTO dto,
+            BindingResult result
+    ) {
+        if (result.hasErrors()) {
+            String mensaje = result.getFieldErrors().stream()
+                    .filter(e -> e.getCode().equals("NotBlank") || e.getCode().equals("Pattern") || e.getCode().equals("Size") || e.getCode().equals("Email"))
+                    .findFirst()
+                    .orElse(result.getFieldError())
+                    .getDefaultMessage();
+            return Map.of(
+                    "success", false,
+                    "message",  mensaje
+            );
+        }
+
+        Compra actualCompra = compraService.findById(dto.getIdCompra());
+
+        if (actualCompra == null) {
+            return Map.of(
+                    "success", false,
+                    "message", "La compra no existe."
+            );
+        }
+
+        // Conversión de String a Enum
+        Compra.EstadoFacturaCompra estadoFacturaCompraEnum;
+        try {
+            estadoFacturaCompraEnum = Compra.EstadoFacturaCompra.valueOf(dto.getEstadoFacturaCompra());
+        } catch (IllegalArgumentException e) {
+            return Map.of(
+                    "success", false,
+                    "message", "Estado de pago no válido. Por favor, selecciona un valor de la lista."
+            );
+        }
+
+        actualCompra.setNombreProveedor(dto.getNombreProveedor());
+        actualCompra.setMarca(dto.getMarca());
+        actualCompra.setTelProveedor(Long.valueOf(dto.getTelProveedor()));
+        actualCompra.setDescripcionCompra(dto.getDescripcionCompra());
+        actualCompra.setEstadoFacturaCompra(estadoFacturaCompraEnum);
+
+        compraService.guardarCompra(actualCompra);
+
+        return Map.of(
+                "success", true,
+                "message", "Compra actualizada correctamente."
+        );
     }
 }

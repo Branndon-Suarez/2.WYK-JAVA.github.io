@@ -40,7 +40,7 @@ public class Compra {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ESTADO_FACTURA_COMPRA", nullable = false)
-    private EstadoFacturaCompra estadoFacturaCompra; // 'PENDIENTE', 'PAGADA', 'CANCELADA'
+    private EstadoFacturaCompra estadoFacturaCompra;
 
     // Relaciones de Detalle (Cascada para guardar los detalles al guardar la Compra)
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)

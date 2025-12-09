@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Compra</title>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-compra-form" class="formulario" method="POST">
+        <h1>Actualizar Compra</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idCompra" name="idCompra" th:value="${formActCompra.idCompra}">
+
+            <div class="campo">
+                <label for="proveedor">Proveedor</label>
+                <div class="contenedor-input">
+                    <input type="text" id="proveedor" name="nombreProveedor" th:value="${formActCompra.nombreProveedor}"
+                           placeholder="Nombre del proveedor">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="marca">Marca</label>
+                <div class="contenedor-input">
+                    <input type="text" id="marca" name="marca" th:value="${formActCompra.marca}"
+                           placeholder="Nombre de la marca">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="telefono">Teléfono</label>
+                <div class="contenedor-input">
+                    <input type="text" id="telefono" name="telProveedor" th:value="${formActCompra.telProveedor}"
+                           placeholder="Número de teléfono">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="email">Email</label>
+                <div class="contenedor-input">
+                    <input type="email" id="email" name="emailProveedor" th:value="${formActCompra.emailProveedor}"
+                           placeholder="Email">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="descripcion">Descripción</label>
+                <div class="contenedor-input">
+                    <input type="text" id="descripcion" name="descripcionCompra"
+                           th:value="${formActCompra.descripcionCompra}" placeholder="Nombre">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoPago">Estado Pago</label>
+                <div class="contenedor-input">
+                    <select id="estadoPago" name="estadoFacturaCompra">
+                        <option value="PENDIENTE"
+                                th:selected="${formActCompra.estadoFacturaCompra.toString() == 'PENDIENTE'}">PENDIENTE
+                        </option>
+                        <option value="PAGADA"
+                                th:selected="${formActCompra.estadoFacturaCompra.toString() == 'PAGADA'}">PAGADA
+                        </option>
+                        <option value="CANCELADA"
+                                th:selected="${formActCompra.estadoFacturaCompra.toString() == 'CANCELADA'}">CANCELADA
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Compra
+        </button>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    const URL_UPDATE = /*[[@{/compras/actualizar}]]*/ "/compras/actualizar";
+    const URL_REDIRECT = /*[[@{/compras}]]*/ "/compras";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<script th:src="@{/js/compra/confirmUpdate.js}"></script>
+</body>
+</html>
