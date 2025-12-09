@@ -1,6 +1,8 @@
 package com.proyecto_wyk.proyecto_wyk.controller;
 
 import com.proyecto_wyk.proyecto_wyk.dto.compra.CompraDTO;
+import com.proyecto_wyk.proyecto_wyk.dto.compra.DetalleCompraModalDTO;
+import com.proyecto_wyk.proyecto_wyk.entity.DetalleVenta;
 import com.proyecto_wyk.proyecto_wyk.entity.Usuario;
 import com.proyecto_wyk.proyecto_wyk.security.CustomUserDetails;
 import com.proyecto_wyk.proyecto_wyk.service.impl.CompraService;
@@ -35,9 +37,45 @@ public class CompraController {
 
     @GetMapping
     public String listar(Model model) {
-        model.addAttribute("listaVentas", compraService.listarCompra());
+        model.addAttribute("listaCompras", compraService.listarCompra());
         model.addAttribute("cantidadComprasExistentes", compraService.cantidadComprasExistentes());
-        return "venta/dashboardVenta";
+        return "compra/dashboardCompra";
+    }
+
+    @GetMapping("/listarDetallesCompraModal")
+    @ResponseBody
+    public Map<String, Object> listarDetallesCompraModal(@RequestParam("id") Long idCompra) {
+        try {
+            // 1. Llama al método correcto del servicio que devuelve el DTO unificado
+            List<DetalleCompraModalDTO> detalles = compraService.findDetallesByIdCompra(idCompra);
+
+            // 2. Mapea las propiedades del DTO a un Map con las claves en MAYÚSCULAS que espera tu JavaScript.
+            List<Map<String, Object>> detallesDTO = detalles.stream().map(d -> {
+                Map<String, Object> itemMap = new HashMap<>();
+
+                // Las claves deben coincidir con las propiedades del DTO y el JS:
+                itemMap.put("TIPO", d.getTipo());
+                itemMap.put("ITEM_NOMBRE", d.getItemNombre());
+                itemMap.put("CANTIDAD", d.getCantidad());
+                itemMap.put("PRECIO_UNITARIO", d.getPrecioUnitario());
+                itemMap.put("SUB_TOTAL", d.getSubTotal());
+
+                return itemMap;
+            }).collect(Collectors.toList());
+
+            return Map.of(
+                    "success", true,
+                    "detalle", detallesDTO // Clave 'detalle' para el JS
+            );
+
+        } catch (Exception e) {
+            System.err.println("Error al obtener detalle de compra (ID: " + idCompra + "): " + e.getMessage());
+
+            return Map.of(
+                    "success", false,
+                    "message", "Error interno al cargar los detalles de la compra: " + e.getMessage()
+            );
+        }
     }
 
     // --- ENDPOINT AJAX para Materia Prima (Referenciado por el JS como 'compras/listarMateriaPrimaAjax') ---

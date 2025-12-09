@@ -82,6 +82,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/ventas/guardar", "/ventas/actualizar")
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
+                        // -----------------------------------------------------------------
+                        // 🎯 6. REGLAS PARA COMPRA (VISTA Y API)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET, "/compras", "/compras/**")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+
+                        // Acciones POST
+                        .requestMatchers(HttpMethod.POST, "/compras/guardar", "/compras/actualizar")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()

@@ -4,6 +4,9 @@ import com.proyecto_wyk.proyecto_wyk.entity.DetalleCompraMateriaPrima;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DetalleCompraMateriaPrimaRepository extends JpaRepository<DetalleCompraMateriaPrima, Integer> {
+    List<DetalleCompraMateriaPrima> findByCompra_IdCompra(Long idCompra);
 }
