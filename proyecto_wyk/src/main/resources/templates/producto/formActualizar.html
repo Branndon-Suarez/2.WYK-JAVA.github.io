@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Actualizar Usuario</title>
+
+<body>
+<!-- Sidebar -->
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="update-producto-form" class="formulario" method="POST">
+        <h1>Actualizar Producto</h1>
+
+        <div class="grupo-formulario">
+            <input type="hidden" id="idProducto" name="idProducto" th:value="${formActProd.idProducto}">
+
+            <div class="campo">
+                <label for="nombreProducto">Nombre del Producto</label>
+                <div class="contenedor-input">
+                    <input type="text" id="nombreProducto" name="nombreProducto" th:value="${formActProd.nombreProducto}" placeholder="Nombre del Producto">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="valorUnitarioProducto">Valor Unitario</label>
+                <div class="contenedor-input">
+                    <input type="text" id="valorUnitarioProducto" name="valorUnitarioProducto" th:value="${formActProd.valorUnitarioProducto}" placeholder="Valor unitario">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="cantExistProducto">Cantidad de Existencia</label>
+                <div class="contenedor-input">
+                    <input type="number" id="cantExistProducto" name="cantExistProducto" th:value="${formActProd.cantExistProducto}" placeholder="Cantidad de Existencia">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="fechaVencimientoProducto">Fecha de Vencimiento</label>
+                <div class="contenedor-input">
+                    <input type="date" id="fechaVencimientoProducto" name="fechaVencimientoProducto" th:value="${formActProd.fechaVencimientoProducto}" >
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="tipoProducto">Tipo de Producto</label>
+                <div class="contenedor-input">
+                    <select id="tipoProducto" name="tipoProducto">
+                        <option th:value="${formActProd.tipoProducto}" th:text="${formActProd.tipoProducto}" selected></option>
+                        <option value="PANADERIA">PANADERIA</option>
+                        <option value="PASTELERIA">PASTELERIA</option>
+                        <option value="ASEO">ASEO</option> </select>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="estadoProducto">Estado</label>
+                <div class="contenedor-input">
+                    <select id="estadoProducto" name="estadoProducto">
+                        <option value="true" th:selected="${formActProd.estadoProducto}">✓ Activo</option>
+                        <option value="false" th:selected="${!formActProd.estadoProducto}">✗ Inactivo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="refresh-cw" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Actualizar Producto
+        </button>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script th:src="@{/js/producto/producto.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    const URL_UPDATE = /*[[@{/productos/actualizar}]]*/ "/productos/actualizar";
+    const URL_REDIRECT = /*[[@{/productos}]]*/ "/productos";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<script th:src="@{/js/producto/confirmUpdate.js}"></script>
+<script th:src="@{/js/producto/selectRolModal.js}"></script>
+</body>
+</html>

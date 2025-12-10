@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const switches = document.querySelectorAll('.check-trail');
     switches.forEach(switchElement => {
         const checkbox = switchElement.previousElementSibling;
-        
+
         checkbox.addEventListener('change', async (event) => {
-            const prodId = event.target.dataset.id;
+            const productoId = event.target.dataset.id;
             const nuevoEstado = event.target.checked ? 1 : 0;
 
             const result = await Swal.fire({
@@ -19,31 +19,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (result.isConfirmed) {
-                const url = `${APP_URL}productos/updateState`;
+                const base = APP_URL.endsWith("/") ? APP_URL : APP_URL + "/";
+
+                const url = `${base}productos/updateState`;
+
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                    headers[CSRF_HEADER] = CSRF_TOKEN;
+                } else {
+                    console.error("ADVERTENCIA: Variables CSRF no definidas. La petición podría fallar.");
+                }
 
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: headers,
                         body: JSON.stringify({
-                            id: prodId,
+                            id: productoId,
                             estado: nuevoEstado
                         })
                     });
 
                     if (!response.ok) {
-                        // Si la respuesta no es OK (ej. 404, 500), maneja el error.
                         const errorData = await response.json();
                         Swal.fire({
                             icon: 'error',
                             title: 'Error de Servidor',
-                            text: errorData.error || `Error: ${response.status} ${response.statusText}`
+                            text: errorData.message || `Error: ${response.status} ${response.statusText}`
                         });
                         event.target.checked = !event.target.checked;
                     } else {
-                        // Si la respuesta es exitosa (código 200).
                         const data = await response.json();
                         Swal.fire({
                             icon: 'success',
@@ -53,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (error) {
                     console.error('Error en la petición fetch:', error);
-                    // Si la petición falla por problemas de conexión.
                     event.target.checked = !event.target.checked;
                     Swal.fire({
                         icon: 'error',
@@ -62,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             } else {
-                // Si el usuario cancela, revierte el estado del switch.
                 event.target.checked = !event.target.checked;
             }
         });

@@ -1,11 +1,9 @@
 document.getElementById('update-producto-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const form = this;
-
     Swal.fire({
         title: '¿Estás seguro?',
-        text: 'Se actualizarán los datos de este producto.',
+        text: 'Se actualizarán los datos del producto.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -14,15 +12,31 @@ document.getElementById('update-producto-form').addEventListener('submit', funct
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            const formData = new FormData(form);
 
-            fetch(APP_URL + 'productos/update', {
+            const data = {
+                idProducto: document.getElementById("idProducto").value,
+                nombreProducto: document.getElementById("nombreProducto").value,
+                valorUnitarioProducto: document.getElementById("valorUnitarioProducto").value,
+                cantExistProducto: document.getElementById("cantExistProducto").value,
+                fechaVencimientoProducto: document.getElementById("fechaVencimientoProducto").value,
+                tipoProducto: document.getElementById("tipoProducto").value,
+                estadoProducto: document.getElementById("estadoProducto").value === "true"
+            };
+
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            headers[CSRF_HEADER] = CSRF_TOKEN;
+
+            fetch(URL_UPDATE, {
                 method: 'POST',
-                body: formData
+                headers: headers,
+                body: JSON.stringify(data)
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('La respuesta de la red no fue exitosa');
+                    throw new Error('Error en la conexión con el servidor');
                 }
                 return response.json();
             })
@@ -30,11 +44,12 @@ document.getElementById('update-producto-form').addEventListener('submit', funct
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Éxito!',
+                        title: '¡Actualizado!',
                         text: data.message
                     }).then(() => {
-                        window.location.href = APP_URL + 'productos';
+                        window.location.href = URL_REDIRECT;
                     });
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -47,7 +62,7 @@ document.getElementById('update-producto-form').addEventListener('submit', funct
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
-                    text: 'No se pudo contactar al servidor: ' + error.message
+                    text: error.message
                 });
             });
         }

@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByEstadoProductoTrue();
+
+    boolean existsByNombreProducto(String nombreProducto);
+    // Verificar si existe otro producto con el mismo nombre y que NO sea el ID actual
+    boolean existsByNombreProductoAndIdProductoNot(String nombreProducto, Long idProducto);
 }

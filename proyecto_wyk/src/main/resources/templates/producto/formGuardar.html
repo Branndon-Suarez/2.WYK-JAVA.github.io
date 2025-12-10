@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Crear Producto</title>
+
+<body>
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="create-producto-form" class="formulario" method="post">
+        <h1>Crear Producto</h1>
+
+        <div class="grupo-formulario">
+            <div class="campo">
+                <label for="idProducto">ID</label>
+                <div class="contenedor-input">
+                    <input type="text" id="idProducto" name="idProducto"
+                           placeholder="Ingresa el ID del producto">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="nombreProducto">Nombre</label>
+                <div class="contenedor-input">
+                    <input type="text" id="nombreProducto" name="nombreProducto"
+                           placeholder="Ingresa el nombre del producto">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="valorUnitarioProducto">Precio Unitario ($)</label>
+                <div class="contenedor-input">
+                    <input type="number" id="valorUnitarioProducto" name="valorUnitarioProducto"
+                           placeholder="Ingresa el precio (solo números)">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="cantExistProducto">Cantidad en Existencia</label>
+                <div class="contenedor-input">
+                    <input type="number" id="cantExistProducto" name="cantExistProducto"
+                           placeholder="Ingresa la cantidad actual">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="fechaVencimientoProducto">Fecha de Vencimiento</label>
+                <div class="contenedor-input">
+                    <input type="date" id="fechaVencimientoProducto" name="fechaVencimientoProducto">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="tipoProducto">Tipo de Producto</label>
+                <div class="input-group">
+                    <select id="tipoProducto" name="tipoProducto" class="form-control">
+                        <option value="">-- Selecciona un tipo --</option>
+                        <option value="PANADERIA">Panadería</option>
+                        <option value="PASTELERIA">Pastelería</option>
+                        <option value="ASEO">Aseo</option> </select>
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit">
+            <i data-feather="plus-circle" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Crear Producto
+        </button>
+    </form>
+</main>
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+
+<script th:inline="javascript">
+    // URLs para el CRUD de Productos
+    const URL_GUARDAR = /*[[@{/productos/guardar}]]*/ "/productos/guardar";
+    const URL_REDIRECT = /*[[@{/productos}]]*/ "/productos";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+
+<script th:src="@{/js/producto/confirmCreate.js}"></script>
+
+</body>
+</html>

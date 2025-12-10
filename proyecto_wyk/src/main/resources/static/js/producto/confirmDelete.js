@@ -1,48 +1,74 @@
 document.addEventListener('DOMContentLoaded', () => {
     const deleteButtons = document.querySelectorAll('.delete-producto');
+
     deleteButtons.forEach(button => {
         button.addEventListener('click', async (event) => {
-            const targetButton = event.target.closest('.delete-producto');
-            const productoId = targetButton.dataset.id;
-            
+
+            const target = event.target.closest('.delete-producto');
+            const idProducto = target.dataset.id;
+
+            // Confirmación
             const result = await Swal.fire({
                 title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
+                text: "Se eliminará este producto y no podrás revertir esta acción.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, ¡eliminar!',
+                confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar'
             });
 
-            if (result.isConfirmed) {
-                const url = `${APP_URL}productos/delete`;
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            id: productoId
-                        })
+            if (!result.isConfirmed) return;
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            };
+
+            if (typeof CSRF_HEADER !== 'undefined' && typeof CSRF_TOKEN !== 'undefined') {
+                headers[CSRF_HEADER] = CSRF_TOKEN;
+            } else {
+                console.error("ADVERTENCIA: Variables CSRF no definidas. La petición podría fallar (403 Forbidden).");
+            }
+
+            try {
+                const response = await fetch('/productos/delete', {
+                    method: 'POST',
+                    headers: headers,
+                    body: `id=${idProducto}`
+                });
+
+                const data = await response.json();
+
+                // Si está relacionado
+                if (data.code === "FK_CONSTRAINT") {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'No se puede eliminar',
+                        text: "Este producto está siendo usado en otros registros (ej. ventas o inventario)."
                     });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        Swal.fire('Error', data.error || 'No se pudo eliminar el producto porque esta conectado con otro(s) registros.', 'error');
-                    } else {
-                        Swal.fire('¡Eliminado!', data.message, 'success')
-                            .then(() => {
-                                window.location.reload();
-                            });
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire('Error de Conexión', 'No se pudo conectar con el servidor.', 'error');
                 }
+
+                if (!data.success) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminado',
+                    text: "Producto eliminado correctamente."
+                }).then(() => location.reload());
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: "No se pudo contactar al servidor."
+                });
             }
         });
     });
