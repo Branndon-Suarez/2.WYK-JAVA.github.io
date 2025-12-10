@@ -26,17 +26,7 @@
     <h3>La página que solicitaste no puede ser encontrada...</h3>
     <p class="p-1">Esto puede deberse a que intentas acceder a una página que no existe o ha sido movida.</p>
 
-    <a th:href="@{/}"><button type="button" class="btn btn-primary">Ir a página principal</button></a>
-
-    <p class="p-2">Puedes hacer uso de nuestro buscador:</p>
-    <nav id="busqueda" class="navbar navbar-light bg-transparent">
-        <div class="container-fluid">
-            <form class="d-flex">
-                <input class="form-control form-control-lg me-2 input-buscar" type="search" placeholder="¿Qué desea buscar?" aria-label="Search">
-                <button class="btn btn-lg boton-buscar" type="submit">Buscar <i class="fa-solid fa-magnifying-glass"></i></button>
-            </form>
-        </div>
-    </nav>
+    <a th:href="@{/dashboard}"><button type="button" class="btn btn-primary">Ir a página principal</button></a>
 </main>
 </body>
 </html>
