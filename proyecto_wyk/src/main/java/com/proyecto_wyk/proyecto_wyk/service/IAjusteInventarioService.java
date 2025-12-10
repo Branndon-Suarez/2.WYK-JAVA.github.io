@@ -14,7 +14,7 @@ public interface IAjusteInventarioService {
     // --- Métodos de Conteo/Reporte ---
 
     long contarAjustesExistentes();
-    long cantAjustesDañados();
+    long cantAjustesDanados();
     long cantAjustesRobo();
     long cantAjustesPerdida();
     long cantAjustesCaducados();

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/ajustes-inventario")
+@RequestMapping("/ajustesInventario")
 public class AjusteInventarioController {
 
     private final IAjusteInventarioService ajusteService;
@@ -58,7 +58,7 @@ public class AjusteInventarioController {
 
         // Cargar métricas de conteo (adaptado de IAjusteInventarioService)
         model.addAttribute("ajustesExistentes", ajusteService.contarAjustesExistentes());
-        model.addAttribute("ajustesDañados", ajusteService.cantAjustesDañados());
+        model.addAttribute("ajustesDanados", ajusteService.cantAjustesDanados());
         model.addAttribute("ajustesRobo", ajusteService.cantAjustesRobo());
         model.addAttribute("ajustesPerdida", ajusteService.cantAjustesPerdida());
         model.addAttribute("ajustesCaducados", ajusteService.cantAjustesCaducados());
@@ -66,7 +66,7 @@ public class AjusteInventarioController {
 
         model.addAttribute("listaUsuarios", usuarioService.listarUsuario());
 
-        return "ajuste/dashboardAjuste"; // Asume la ruta de la vista
+        return "ajusteInventario/dashboardAjuste"; // Asume la ruta de la vista
     }
 
     // --- 2. FORMULARIO DE GUARDADO ---

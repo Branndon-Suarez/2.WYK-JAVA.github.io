@@ -136,14 +136,14 @@
 <script th:src="@{/js/sweetalert2.all.min.js}"></script>
 <script th:inline="javascript">
     // Rutas actualizadas para el Controller de AjusteInventario
-    const URL_GUARDAR = /*[[@{/ajustes-inventario/guardar}]]*/ "/ajustes-inventario/guardar";
-    const URL_REDIRECT = /*[[@{/ajustes-inventario}]]*/ "/ajustes-inventario";
+    const URL_GUARDAR = /*[[@{/ajustesInventario/guardar}]]*/ "/ajustesInventario/guardar";
+    const URL_REDIRECT = /*[[@{/ajustesInventario}]]*/ "/ajustesInventario";
     const APP_URL = /*[[@{/}]]*/ "/";
 
     const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
     const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
 </script>
-<script th:src="@{/js/ajuste/confirmCreateAjuste.js}"></script>
-<script th:src="@{/js/ajuste/selectUserModalAjuste.js}"></script>
+<script th:src="@{/js/ajusteInventario/confirmCreate.js}"></script>
+<script th:src="@{/js/ajusteInventario/selectProdModal.js}"></script>
 </body>
 </html>

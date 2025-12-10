@@ -26,11 +26,10 @@
                 </button>
             </div>
 
-            <a th:href="@{/ajustes-inventario/formGuardar}">
+            <a th:href="@{/ajustesInventario/formGuardar}">
                 <button type="button" class="btn btn-primary">+ Nuevo Ajuste</button>
             </a>
         </header>
-
 
         <div class="layout">
             <section class="hero">
@@ -52,7 +51,6 @@
                 </div>
             </section>
 
-
             <section class="stats">
                 <div class="stat">
                     <div>
@@ -73,7 +71,7 @@
                 <div class="stat">
                     <div>
                         <div class="muted">Por DAÑADO</div>
-                        <div class="kpi" th:text="${ajustesDañados}"></div>
+                        <div class="kpi" th:text="${ajustesDanados}"></div>
                     </div>
                     <div class="icon">
                         <lord-icon
@@ -138,26 +136,24 @@
                 <table id="tablaAjustes" class="tabla-consultas">
                     <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Fecha Ajuste</th>
-                        <th>Producto</th>
                         <th>Tipo Ajuste</th>
                         <th>Cantidad</th>
-                        <th>Registrado por</th>
                         <th>Descripción</th>
+                        <th>Producto</th>
+                        <th>Registrado por</th>
                         <th colspan="1" style="text-align:center">Acciones</th>
                     </tr>
                     </thead>
 
                     <tbody>
                     <tr th:each="a : ${listaAjustes}">
-                        <td th:text="${a.idAjuste}"></td>
                         <td th:text="${#temporals.format(a.fechaAjuste, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td th:text="${a.producto.nombre}"></td>
                         <td th:text="${a.tipoAjuste}"></td>
                         <td th:text="${a.cantidadAjustada}"></td>
-                        <td th:text="${a.usuario.nombre}"></td>
                         <td th:text="${a.descripcion}"></td>
+                        <td th:text="${a.producto.nombreProducto}"></td>
+                        <td th:text="${a.usuario.nombre}"></td>
 
                         <td>
                             <button class="btn btn-sm btn-danger delete-ajuste"
@@ -182,7 +178,7 @@
             </div>
 
         </div>
-        <div th:replace="~{/ajuste/modalConsultas :: modalConsultas}"></div>
+        <div th:replace="~{/ajusteInventario/modalConsultas :: modalConsultas}"></div>
         <div th:replace="~{/layout/footers/footerDashboard :: footerDashboard}"></div>
     </main>
 </div>
@@ -210,8 +206,8 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script th:src="@{/js/ajuste/confirmDeleteAjuste.js}"></script>
-<script th:src="@{/js/ajuste/busquedaFiltroAjuste.js}"></script>
-<script th:src="@{/js/ajuste/PDFgenerateFilterAjuste.js}"></script>
+<script th:src="@{/js/ajusteInventario/confirmDeleteAjuste.js}"></script>
+<script th:src="@{/js/ajusteInventario/busquedaFiltroAjuste.js}"></script>
+<script th:src="@{/js/ajusteInventario/PDFgenerateFilterAjuste.js}"></script>
 </body>
 </html>

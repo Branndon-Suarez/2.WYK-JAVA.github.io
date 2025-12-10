@@ -56,7 +56,7 @@ public class AjusteInventarioService implements IAjusteInventarioService {
     }
 
     @Override
-    public long cantAjustesDañados() {
+    public long cantAjustesDanados() {
         return contarPorTipo(AjusteInventario.TipoAjuste.DAÑADO);
     }
 
