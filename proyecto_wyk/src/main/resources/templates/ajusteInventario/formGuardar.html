@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headForm :: headForm}"></head>
+
+<title>Registrar Ajuste de Inventario</title>
+
+<body>
+<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+<main class="principal">
+    <button type="button" class="volver" onclick="history.back()">
+        <i data-feather="arrow-left"></i> Volver
+    </button>
+
+    <form id="create-ajuste-form" class="formulario" method="post">
+        <h1>Registrar Ajuste de Inventario</h1>
+
+        <div class="grupo-formulario">
+
+            <div class="campo">
+                <label for="fecha_ajuste">Fecha y Hora de Ajuste</label>
+                <div class="contenedor-input">
+                    <input type="datetime-local" id="fecha_ajuste" name="fechaAjuste">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="producto_fk">Producto Afectado</label>
+                <div class="contenedor-input">
+                    <select id="producto_fk" name="idProducto">
+                        <option value="">Seleccione un producto</option>
+                        <option th:each="prod : ${listaProductos}"
+                                th:value="${prod.idProducto}"
+                                th:text="${prod.nombre} + ' (' + ${prod.codigo} + ')'"></option>
+                    </select>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="tipo_ajuste">Tipo de Ajuste</label>
+                <div class="contenedor-input">
+                    <select id="tipo_ajuste" name="tipoAjuste">
+                        <option value="">Seleccione el tipo</option>
+                        <option value="DAÑADO">DAÑADO</option>
+                        <option value="ROBO">ROBO</option>
+                        <option value="PERDIDA">PÉRDIDA</option>
+                        <option value="CADUCADO">CADUCADO</option>
+                        <option value="MUESTRA">MUESTRA</option>
+                    </select>
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="cantidad_ajustada">Cantidad Ajustada</label>
+                <div class="contenedor-input">
+                    <input type="number" id="cantidad_ajustada" name="cantidadAjustada" placeholder="Ej: -5 (por pérdida) o 10 (por recuperación)">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="descripcion">Razón / Detalle</label>
+                <div class="contenedor-input">
+                    <input type="text" id="descripcion" name="descripcion" placeholder="Explique el motivo del ajuste">
+                    <div class="resalte-input"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="usuario_fk">Registrado por (Empleado)</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary input-group-text boton-busqueda-cafe"
+                            id="select-user-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalUsuarios"> <i data-feather="search"></i>
+                    </button>
+                    <input type="text" id="usuario_display" class="form-control" placeholder="Selecciona el usuario que realiza el ajuste" readonly>
+                    <input type="hidden" id="usuario_fk" name="idUsuario">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">
+            <i data-feather="plus-circle" style="margin-right: 8px; width: 20px; height: 20px;"></i>
+            Registrar Ajuste
+        </button>
+    </form>
+</main>
+
+<div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Empleado que Registra</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tablaUsuariosModal">
+                        <thead>
+                        <tr>
+                            <th>N° Documento</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${listaUsuarios}">
+                            <td th:text="${user.numDoc}"></td>
+                            <td th:text="${user.nombre}"></td>
+                            <td th:text="${user.rol.nombreRol}"></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success select-user-modal"
+                                        th:data-id="${user.idUsuario}"
+                                        th:data-nombre="${user.nombre}">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+<script th:inline="javascript">
+    // Rutas actualizadas para el Controller de AjusteInventario
+    const URL_GUARDAR = /*[[@{/ajustes-inventario/guardar}]]*/ "/ajustes-inventario/guardar";
+    const URL_REDIRECT = /*[[@{/ajustes-inventario}]]*/ "/ajustes-inventario";
+    const APP_URL = /*[[@{/}]]*/ "/";
+
+    const CSRF_TOKEN = /*[[${_csrf.token}]]*/ "";
+    const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ "";
+</script>
+<script th:src="@{/js/ajuste/confirmCreateAjuste.js}"></script>
+<script th:src="@{/js/ajuste/selectUserModalAjuste.js}"></script>
+</body>
+</html>
