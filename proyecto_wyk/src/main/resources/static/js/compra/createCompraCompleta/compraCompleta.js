@@ -536,7 +536,7 @@ async function guardarCompra(e) {
                         confirmButtonColor: '#3085d6'
                     }).then(() => {
                         // Redireccionar al listado/reporte de compras o recargar
-                        window.location.href = window.APP_URL + 'compras/reportes';
+                        window.location.href = window.APP_URL + 'compras';
                     });
                 } else {
                     const message = json.message || "Error desconocido al registrar la compra. Revise el log del servidor.";
