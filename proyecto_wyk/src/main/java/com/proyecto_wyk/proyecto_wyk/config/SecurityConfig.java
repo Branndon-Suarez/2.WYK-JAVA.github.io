@@ -65,25 +65,50 @@ public class SecurityConfig {
                         // -----------------------------------------------------------------
                         // 🎯 4. REGLAS PARA PRODUCTO (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
-                        .requestMatchers(HttpMethod.GET, "/productos", "/productos/**")
-                        .hasAnyAuthority("ADMINISTRADOR")
+                        // Vistas listar, formulario de crear y actualizar
+                        .requestMatchers(HttpMethod.GET, "/productos", "/productos/formGuardar", "/productos/formAct/**")
+                        .hasAuthority("ADMINISTRADOR")
+                        // Permite al ADMIN y MESERO acceso al endpoint /productos/listar para el modal en ventas
+                        .requestMatchers(HttpMethod.GET, "/productos/listar")
+                        .hasAnyAuthority("ADMINISTRADOR", "MESERO")
 
                         // Acciones POST
-                        .requestMatchers(HttpMethod.POST, "/productos/guardar", "/productos/actualizar", "/productos/delete", "/productos/updateState")
-                        .hasAnyAuthority("ADMINISTRADOR", "COCINERO")
+                        .requestMatchers(HttpMethod.POST, "/productos/guardar", "/productos/actualizar", "/productos/updateState", "/productos/delete")
+                        .hasAnyAuthority("ADMINISTRADOR")
 
                         // -----------------------------------------------------------------
                         // 🎯 5. REGLAS PARA VENTA (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
-                        .requestMatchers(HttpMethod.GET, "/ventas", "/ventas/**")
+                        // Vistas solo listado tareas
+                        .requestMatchers(HttpMethod.GET, "/ventas")
+                        .hasAnyAuthority("ADMINISTRADOR", "CAJERO")
+                        // Vistas solo form guardar venta
+                        .requestMatchers(HttpMethod.GET, "/ventas/formGuardar")
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+                        // Vistas solo form actualizar venta
+                        .requestMatchers(HttpMethod.GET, "/ventas/formAct/**")
+                        .hasAnyAuthority("ADMINISTRADOR", "CAJERO")
 
                         // Acciones POST
-                        .requestMatchers(HttpMethod.POST, "/ventas/guardar", "/ventas/actualizar")
+                        // Guardar venta
+                        .requestMatchers(HttpMethod.POST, "/ventas/guardar")
                         .hasAnyAuthority("ADMINISTRADOR", "MESERO")
+                        // Actualizar venta
+                        .requestMatchers(HttpMethod.POST, "/ventas/actualizar")
+                        .hasAnyAuthority("ADMINISTRADOR", "CAJERO")
 
                         // -----------------------------------------------------------------
-                        // 🎯 6. REGLAS PARA COMPRA (VISTA Y API)
+                        // 🎯 6. REGLAS PARA MATERIA PRIMA (VISTA Y API)
+                        // Vistas (GETs: Listar, formGuardar, formAct)
+                        .requestMatchers(HttpMethod.GET, "/materiasPrimas", "/materiasPrimas/**")
+                        .hasAnyAuthority("ADMINISTRADOR")
+
+                        // Acciones POST
+                        .requestMatchers(HttpMethod.POST, "/materiasPrimas/guardar", "/materiasPrimas/actualizar")
+                        .hasAnyAuthority("ADMINISTRADOR")
+
+                        // -----------------------------------------------------------------
+                        // 🎯 7. REGLAS PARA COMPRA (VISTA Y API)
                         // Vistas (GETs: Listar, formGuardar, formAct)
                         .requestMatchers(HttpMethod.GET, "/compras", "/compras/**")
                         .hasAnyAuthority("ADMINISTRADOR")

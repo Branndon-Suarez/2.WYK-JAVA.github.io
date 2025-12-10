@@ -1,9 +1,3 @@
-// pedidosMesero.js
-// Asume la existencia de las variables globales:
-// - APP_URL (ej: 'http://localhost:8080/')
-// - USER_ID (ID del usuario autenticado)
-// - CSRF_HEADER, CSRF_TOKEN (para seguridad)
-
 let productosSeleccionados = [];
 let productosDisponibles = [];
 
@@ -337,7 +331,6 @@ btnGuardarPedido.addEventListener("click", () => {
                 // 🔑 CONFIGURACIÓN DE SEGURIDAD CSRF
                 const headers = { 'Content-Type': 'application/json' };
                 const url = window.APP_URL + 'ventas/guardar'; // Usar window.APP_URL
-                // Añadir el token CSRF usando las variables globales de window
                 if (window.CSRF_HEADER && window.CSRF_TOKEN) {
                     headers[window.CSRF_HEADER] = window.CSRF_TOKEN;
                 }
@@ -354,7 +347,9 @@ btnGuardarPedido.addEventListener("click", () => {
                         icon: 'success',
                         title: '¡Pedido guardado!',
                         text: "El pedido se ha guardado correctamente. ID Venta: " + json.idVenta
-                    }).then(() => location.reload());
+                    }).then(() => {
+                        window.location.href = window.APP_URL + 'ventas/formGuardar';
+                    });
                 } else {
                     // Manejo de errores de negocio (Ej: Stock Insuficiente)
                     const message = json.message || "Error desconocido al guardar el pedido.";

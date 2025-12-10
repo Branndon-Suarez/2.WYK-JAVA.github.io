@@ -1,9 +1,7 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <nav th:fragment="sidebar" aria-label="Menú de navegación" class="sidebar">
-
     <div class="logo">🥐</div>
-
     <ul>
         <!-- INICIO -->
         <li title="Inicio">
@@ -17,7 +15,7 @@
         </li>
 
         <!-- USUARIOS (visible siempre) -->
-        <li class="has-submenu" title="Usuarios">
+        <li sec:authorize="hasAuthority('ADMINISTRADOR')" class="has-submenu" title="Usuarios">
             <button class="nav-btn" aria-label="Usuarios" aria-expanded="false">
                 <lord-icon src="https://cdn.lordicon.com/bushiqea.json"
                            trigger="hover"
@@ -67,7 +65,7 @@
         </li>
 
         <!-- INVENTARIO -->
-        <li class="has-submenu" title="Inventario">
+        <li sec:authorize="hasAuthority('ADMINISTRADOR')" class="has-submenu" title="Inventario">
             <button class="nav-btn" aria-label="Productos" aria-expanded="false">
                 <lord-icon
                         src="https://cdn.lordicon.com/sbrvirwc.json"
@@ -118,7 +116,7 @@
         </li>
 
         <!-- FINANZAS -->
-        <li class="has-submenu" title="Finanzas">
+        <li sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'CAJERO')" class="has-submenu" title="Finanzas">
             <button class="nav-btn" aria-label="Facturas" aria-expanded="false">
                 <lord-icon
                         src="https://cdn.lordicon.com/bsdkzyjd.json"
@@ -142,7 +140,7 @@
                         Ventas
                     </a>
                 </li>
-                <li>
+                <li sec:authorize="hasAuthority('ADMINISTRADOR')">
                     <a th:href="@{/compras}">
                         <lord-icon
                                 src="https://cdn.lordicon.com/uisoczqi.json"
@@ -157,7 +155,7 @@
             </ul>
         </li>
 
-        <li title="Producción">
+        <li sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'COCINERO')" title="Producción">
             <a th:href="@{/produccion}" class="nav-btn" aria-label="Produccion">
                 <lord-icon
                         src="https://cdn.lordicon.com/asyunleq.json"
@@ -171,8 +169,8 @@
 
         <div class="spacer"></div>
 
-        <li title="Pedidos">
-            <a th:href="@{/pedidos}" class="nav-btn" aria-label="Pedidos">
+        <li sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'MESERO')" title="Pedidos">
+            <a th:href="@{/ventas/formGuardar}" class="nav-btn" aria-label="Pedidos">
                 <img th:src="@{/images/sidebar/pedidos.png}" alt="Pedidos" width="50rem">
             </a>
         </li>
@@ -188,8 +186,6 @@
                 </lord-icon>
             </a>
         </li>
-
     </ul>
 </nav>
-
 </html>
