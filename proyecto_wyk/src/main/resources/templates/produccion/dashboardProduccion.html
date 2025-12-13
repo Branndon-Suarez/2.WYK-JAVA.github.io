@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/headDashboard :: headDashboard}"></head>
+<body>
+<div class="app">
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <main class="main">
+        <header>
+            <strong>PANADERÍA WYK — Gestión de Producción</strong>
+
+            <div class="search">
+                <lord-icon
+                        src="https://cdn.lordicon.com/vhdgmtyj.json"
+                        trigger="hover"
+                        stroke="bold"
+                        colors="primary:#933e0d"
+                        style="width:50px;height:50px">
+                </lord-icon>
+
+                <input id="buscarRapido" placeholder="Buscar producción o producto…"/>
+
+                <button type="button" class="btn btn-ghost"
+                        data-bs-toggle="modal" data-bs-target="#filtroAvanzadoModal">
+                    <i data-feather="sliders" style="width:18px;height:18px;color:#94a3b8;"></i>
+                </button>
+            </div>
+
+            <a th:href="@{/produccion/formGuardar}">
+                <button type="button" class="btn btn-primary">+ Nueva Producción</button>
+            </a>
+        </header>
+
+        <div class="layout">
+            <section class="hero">
+                <div>
+                    <div class="hero-note">Área de Transformación</div>
+                    <h2>Control de Procesos y Lotes</h2>
+                    <div class="hero-note">Transformando materia prima en calidad para nuestros clientes 🥐</div>
+
+                    <div style="margin-top:12px; display:flex; gap:10px;">
+                        <button class="btn btn-ghost">Ver rendimiento</button>
+                    </div>
+                </div>
+
+                <div class="illus">
+                    <div class="floaty"></div>
+                    <div class="bread">🥖</div>
+                    <div class="croissant">🥐</div>
+                </div>
+            </section>
+
+            <section class="stats">
+                <div class="stat">
+                    <div>
+                        <div class="muted">Producciones totales</div>
+                        <div class="kpi" th:text="${cantidadProducciones}">0</div>
+                    </div>
+                    <div class="icon">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/lsrcesku.json"
+                                trigger="hover"
+                                stroke="bold"
+                                colors="primary:#933e0d,secondary:#933e0d"
+                                style="width:40px;height:40px">
+                        </lord-icon>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-reportes">
+                <div class="table-header">
+                    <strong>Historial de Producción</strong>
+                    <button type="button" id="generatePdfBtnProduccion" style="display:flex; align-items:center;"
+                            class="btn btn-ghost btp-personalizado">
+                        <span>Generar reporte</span>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/gyyhoycg.json"
+                                trigger="hover"
+                                stroke="bold"
+                                colors="primary:#fff"
+                                style="width:50px;height:50px">
+                        </lord-icon>
+                    </button>
+                </div>
+
+                <table id="tablaProduccion" class="tabla-consultas">
+                    <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Nombre del Lote</th>
+                        <th>Producto Resultante</th>
+                        <th>Cantidad Producida</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Responsable</th>
+                        <th colspan="2" style="text-align:center">Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="p : ${listaProduccion}">
+                        <td>
+                            <span th:text="${p.idProduccion}" style="display:none;"></span>
+                            <span th:text="${p.nombreProduccion}"></span><br>
+                            <small class="muted" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"></small>
+                        </td>
+                        <td th:text="${p.nombreProduccion}"></td>
+                        <td>
+                            <strong th:text="${p.producto.nombreProducto}"></strong>
+                        </td>
+                        <td th:text="${p.cantProduccion + ' unidades'}"></td>
+                        <td th:text="${p.descripcionProduccion}"></td>
+                        <td>
+                            <span th:classappend="${p.estadoProduccion.name() == 'FINALIZADA' ? 'badge-success' : 'badge-warning'}"
+                                  class="badge"
+                                  th:text="${p.estadoProduccion}"></span>
+                        </td>
+                        <td th:text="${p.usuario.nombre}"></td>
+
+                        <td>
+                            <a th:href="@{/produccion/formAct/{id}(id=${p.idProduccion})}"
+                               class="btn btn-sm btn-primary btn-actualizar">
+                                <lord-icon
+                                        src="https://cdn.lordicon.com/ibckyoan.json"
+                                        trigger="hover"
+                                        colors="primary:#ffffff"
+                                        style="width:30px;height:30px">
+                                </lord-icon>
+                            </a>
+                        </td>
+
+                        <td>
+                            <button
+                                    type="button"
+                                    class='btn btn-sm btn-primary btn-detalle-produccion'
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detalleProduccionModal"
+                                    th:data-id-produccion="${p.idProduccion}">
+                                Ver Insumos
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(listaProduccion)}">
+                        <td colspan="9" style="text-align:center">No hay registros de producción disponibles.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:replace="~{/layout/footers/footerDashboard :: footerDashboard}"></div>
+    </main>
+</div>
+
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    window.APP_URL = [[@{/}]];
+    window.CSRF_TOKEN = [[${_csrf.token}]];
+    window.CSRF_HEADER = [[${_csrf.headerName}]];
+</script>
+
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/logout.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>

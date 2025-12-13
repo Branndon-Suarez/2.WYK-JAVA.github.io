@@ -1,4 +1,41 @@
 package com.proyecto_wyk.proyecto_wyk.controller;
 
+import com.proyecto_wyk.proyecto_wyk.entity.MateriaPrima;
+import com.proyecto_wyk.proyecto_wyk.entity.Producto;
+import com.proyecto_wyk.proyecto_wyk.service.impl.MateriaPrimaService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/MateriasPrimas")
 public class MateriaPrimaController {
+    private final MateriaPrimaService materiaPrimaService;
+
+    public MateriaPrimaController(MateriaPrimaService materiaPrimaService) {
+        this.materiaPrimaService = materiaPrimaService;
+    }
+
+    @GetMapping("listar")
+    @ResponseBody
+    public ResponseEntity<?> listarMateriaPrimaModal() {
+        try {
+            List<MateriaPrima> materiasPrimas = materiaPrimaService.listarTodasActivas();
+
+            // Spring Boot convierte automáticamente la lista de entidades a JSON.
+            return ResponseEntity.ok(materiasPrimas);
+        } catch (Exception e) {
+            System.err.println("Error al listar materias primas para modal: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "Error al cargar el listado de materias primas."
+            ));
+        }
+    }
 }

@@ -20,7 +20,6 @@ public class ProductoService {
     }
 
     public List<Producto> listarTodosActivos() {
-        // Usamos el método de Query Method del repositorio
         return productoRepository.findByEstadoProductoTrue();
     }
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/heads/compraCompleta :: compraCompleta}"></head>
+<body>
+<div class="app">
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <div class="main-content">
+        <button type="button" class="volver" onclick="history.back()">Volver</button>
+
+        <main class="compra-container">
+            <h2 class="titulo-compra">🏭 Registro de Producción</h2>
+
+            <section class="form-grid">
+                <div class="form-group">
+                    <label>Nombre del Lote/Producción</label>
+                    <input type="text" id="nombreProduccion" placeholder="Ej: Pan Blandito Mañana">
+                </div>
+
+                <div class="form-group">
+                    <label>Producto a Fabricar</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="nombreProductoFinal" readonly placeholder="Seleccione producto...">
+                        <input type="hidden" id="idProductoFinal">
+                        <button type="button" id="btnModalProducto" class="btn-azul">🔍</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cantidad a Producir (Unidades)</label>
+                    <input type="number" id="cantidadFinal" min="1" value="1">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Descripción</label>
+                    <input id="descripcionProduccion" type="text" placeholder="Notas del proceso...">
+                </div>
+            </section>
+
+            <section class="productos-card">
+                <div class="productos-header">
+                    <h3>Materias Primas (Insumos)</h3>
+                    <button type="button" id="btnAddInsumo" class="btn-azul">➕ Añadir Insumo</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="tabla-productos">
+                        <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th style="width:120px">Cant. Requerida</th>
+                            <th style="width:120px">Unidad</th>
+                            <th style="width:90px">Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tablaInsumosBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="btn-guardar-container">
+                <button id="btnGuardarProduccion" class="btn-verde">✅ Finalizar Producción</button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div id="modalProductos" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Seleccionar Producto Terminado</h3></div>
+        <div class="modal-body">
+            <input type="text" id="buscarProducto" class="input-busqueda" placeholder="Buscar...">
+            <table class="tabla-productos">
+                <thead><tr><th>Nombre</th><th>Stock</th><th>Acción</th></tr></thead>
+                <tbody id="listaProductos"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modalMP" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Seleccionar Insumos</h3></div>
+        <div class="modal-body">
+            <input type="text" id="buscarMP" class="input-busqueda" placeholder="Buscar...">
+            <table class="tabla-productos">
+                <thead><tr><th>Nombre</th><th>Unidad</th><th>Acción</th></tr></thead>
+                <tbody id="listaMP"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    window.APP_URL = [[@{/}]];
+    window.USER_ID = [[${currentUserId}]];
+    window.CSRF_HEADER = [[${_csrf.headerName}]];
+    window.CSRF_TOKEN = [[${_csrf.token}]];
+</script>
+<script th:src="@{/js/produccion/produccionCompleta.js}"></script>
+</body>
+</html>

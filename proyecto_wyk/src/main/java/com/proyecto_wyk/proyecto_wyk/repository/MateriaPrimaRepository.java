@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface MateriaPrimaRepository extends JpaRepository<MateriaPrima, Long> {
     // Método que necesitarás para el modal (asumiendo que buscas activas o todas)
-    List<MateriaPrima> findAll(); // Opcional: findByEstado(boolean estado) si tuvieras estado
+    List<MateriaPrima> findAll();
+    List<MateriaPrima> findByEstadoMateriaPrimaTrue();
 }

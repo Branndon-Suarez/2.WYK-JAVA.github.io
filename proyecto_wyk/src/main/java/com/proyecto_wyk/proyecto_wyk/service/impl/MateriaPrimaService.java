@@ -19,6 +19,10 @@ public class MateriaPrimaService {
         return materiaPrimaRepository.findAll();
     }
 
+    public List<MateriaPrima> listarTodasActivas() {
+        return materiaPrimaRepository.findByEstadoMateriaPrimaTrue();
+    }
+
     // Método para buscar por ID (necesario para la Compra)
     public MateriaPrima buscarPorId(Long id) {
         return materiaPrimaRepository.findById(id).orElseThrow(
