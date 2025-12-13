@@ -1,0 +1,122 @@
+:root {
+    --primary-color: #933e0d;
+    --background-color: #f9f5f0;
+    --dark-color: #151515;
+    --white: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    margin: 0;
+}
+
+.container {
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.heading-1 {
+    text-align: center;
+    font-weight: 600;
+    color: var(--dark-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Grilla de productos */
+.container-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: 3rem;
+}
+
+/* Tarjeta de producto */
+.card-product {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card-product:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.container-img {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.8rem;
+}
+
+.container-img img {
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    display: block;
+}
+
+/* Badge de Stock Bajo */
+.discount {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: #e74c3c;
+    color: var(--white);
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Contenido de la tarjeta */
+.content-card-product {
+    padding-top: 2rem;
+    text-align: center;
+}
+
+.content-card-product h3 {
+    font-size: 1.8rem;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.category-tag {
+    font-size: 1.2rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.price-section {
+    margin-top: 1.5rem;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+}
+
+.price {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stock {
+    font-size: 1.3rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.stock span {
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-products {
+        grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    }
+}

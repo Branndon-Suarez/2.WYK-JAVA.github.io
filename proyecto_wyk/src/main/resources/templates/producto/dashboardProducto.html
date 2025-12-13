@@ -33,146 +33,173 @@
             </a>
         </header>
 
-        <div class="layout">
-            <!-- HERO -->
-            <section class="hero">
-                <div>
-                    <div class="hero-note">¡Buen día!</div>
-                    <h2>Bienvenidos a la pandería,
-                        <!--                            <span style="color:var(&#45;&#45;primary)" th:text="${userName}"></span>-->
-                    </h2>
+        <!-- PESTAÑAS -->
+        <ul class="nav nav-tabs custom-tabs" id="productTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-pane"
+                        type="button" role="tab">
+                    <i data-feather="settings" style="width:16px; margin-right:8px;"></i>Administración
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="catalog-tab" data-bs-toggle="tab" data-bs-target="#catalog-pane"
+                        type="button" role="tab">
+                    <i data-feather="grid" style="width:16px; margin-right:8px;"></i>Catálogo
+                </button>
+            </li>
+        </ul>
 
-                    <div class="hero-note">Que el aroma del pan recién horneado te acompañe hoy 🍞</div>
+        <!-- CONTENIDO DE CADA PESTAÑA -->
+        <div class="tab-content" id="productTabsContent">
+            <div class="tab-pane fade show active" id="admin-pane" role="tabpanel">
+                <div class="layout">
+                    <!-- HERO -->
+                    <section class="hero">
+                        <div>
+                            <div class="hero-note">¡Buen día!</div>
+                            <h2>Bienvenidos a la pandería,
+                                <!--                            <span style="color:var(&#45;&#45;primary)" th:text="${userName}"></span>-->
+                            </h2>
 
-                    <div style="margin-top:12px; display:flex; gap:10px;">
-                        <button class="btn btn-ghost">Ver reportes</button>
-                    </div>
-                </div>
+                            <div class="hero-note">Que el aroma del pan recién horneado te acompañe hoy 🍞</div>
 
-                <div class="illus">
-                    <div class="floaty"></div>
-                    <div class="bread">🥖</div>
-                    <div class="croissant">🥐</div>
-                </div>
-            </section>
+                            <div style="margin-top:12px; display:flex; gap:10px;">
+                                <a th:href="@{/productos/catalogo}">
+                                    <button class="btn btn-ghost">Catálogo</button>
+                                </a>
+                            </div>
+                        </div>
 
-            <!-- KPIs -->
-            <section class="stats">
-                <div class="stat">
-                    <div>
-                        <div class="muted">Productos Existentes</div>
-                        <div class="kpi" th:text="${prodExistentes}"></div>
-                    </div>
-                    <div class="icon">
-                        <i data-feather="package" style="width:40px;height:40px;color:var(--primary)"></i>
-                    </div>
-                </div>
+                        <div class="illus">
+                            <div class="floaty"></div>
+                            <div class="bread">🥖</div>
+                            <div class="croissant">🥐</div>
+                        </div>
+                    </section>
 
-                <div class="stat">
-                    <div>
-                        <div class="muted">Productos Activos</div>
-                        <div class="kpi" th:text="${prodActivos}"></div>
-                    </div>
-                    <div class="icon">
-                        <i data-feather="check-circle" style="width:40px;height:40px;color:var(--success)"></i>
-                    </div>
-                </div>
+                    <!-- KPIs -->
+                    <section class="stats">
+                        <div class="stat">
+                            <div>
+                                <div class="muted">Productos Existentes</div>
+                                <div class="kpi" th:text="${prodExistentes}"></div>
+                            </div>
+                            <div class="icon">
+                                <i data-feather="package" style="width:40px;height:40px;color:var(--primary)"></i>
+                            </div>
+                        </div>
 
-                <div class="stat">
-                    <div>
-                        <div class="muted">Productos Inactivos</div>
-                        <div class="kpi" th:text="${prodInactivos}"></div>
-                    </div>
-                    <div class="icon">
-                        <i data-feather="x-circle" style="width:40px;height:40px;color:var(--danger)"></i>
-                    </div>
-                </div>
-            </section>
+                        <div class="stat">
+                            <div>
+                                <div class="muted">Productos Activos</div>
+                                <div class="kpi" th:text="${prodActivos}"></div>
+                            </div>
+                            <div class="icon">
+                                <i data-feather="check-circle" style="width:40px;height:40px;color:var(--success)"></i>
+                            </div>
+                        </div>
 
-            <div class="section-reportes">
-                <div class="table-header">
-                    <strong>Tabla de Productos</strong>
-                    <button type="button" id="generatePdfBtnProducto" style="display:flex; align-items:center;"
-                            class="btn btn-ghost btp-personalizado">
-                        <span>Generar PDF</span>
-                        <lord-icon
-                                src="https://cdn.lordicon.com/gyyhoycg.json"
-                                trigger="hover"
-                                stroke="bold"
-                                colors="primary:#fff"
-                                style="width:50px;height:50px">
-                        </lord-icon>
-                    </button>
-                </div>
+                        <div class="stat">
+                            <div>
+                                <div class="muted">Productos Inactivos</div>
+                                <div class="kpi" th:text="${prodInactivos}"></div>
+                            </div>
+                            <div class="icon">
+                                <i data-feather="x-circle" style="width:40px;height:40px;color:var(--danger)"></i>
+                            </div>
+                        </div>
+                    </section>
 
-                <table id="tablaProductos" class="tabla-consultas">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Precio (Unidad)</th>
-                        <th>Existencias</th>
-                        <th>Vencimiento</th>
-                        <th>Estado</th>
-                        <th colspan="2" style="text-align:center">Acciones</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr th:each="p : ${listaProd}">
-                        <td th:text="${p.idProducto}"></td>
-                        <td th:text="${p.nombreProducto}"></td>
-                        <td th:text="${p.tipoProducto}"></td>
-                        <td th:text="${p.valorUnitarioProducto}"></td>
-                        <td th:text="${p.cantExistProducto}"></td>
-                        <td th:text="${#temporals.format(p.fechaVencimientoProducto, 'dd-MM-yyyy')}"></td>
-
-                        <td>
-                            <input type="checkbox"
-                                   th:id="'switch_' + ${p.idProducto}"
-                                   th:data-id="${p.idProducto}"
-                                   th:checked="${p.estadoProducto} == true">
-                            <label th:for="'switch_' + ${p.idProducto}" class="check-trail">
-                                <span class="check-handler"></span>
-                            </label>
-                        </td>
-
-                        <td>
-                            <a th:href="@{/productos/formAct/{id}(id=${p.idProducto})}"
-                               class="btn btn-sm btn-primary btn-actualizar">
+                    <div class="section-reportes">
+                        <div class="table-header">
+                            <strong>Tabla de Productos</strong>
+                            <button type="button" id="generatePdfBtnProducto" style="display:flex; align-items:center;"
+                                    class="btn btn-ghost btp-personalizado">
+                                <span>Generar PDF</span>
                                 <lord-icon
-                                        src="https://cdn.lordicon.com/ibckyoan.json"
+                                        src="https://cdn.lordicon.com/gyyhoycg.json"
                                         trigger="hover"
-                                        colors="primary:#ffffff"
-                                        style="width:30px;height:30px">
-                                </lord-icon>
-                            </a>
-                        </td>
-
-                        <td>
-                            <button class="btn btn-sm btn-danger delete-producto"
-                                    th:data-id="${p.idProducto}">
-                                <lord-icon
-                                        src="https://cdn.lordicon.com/oqeixref.json"
-                                        trigger="morph"
-                                        state="morph-trash-full"
-                                        colors="primary:#ffffff"
-                                        style="width:30px;height:30px">
+                                        stroke="bold"
+                                        colors="primary:#fff"
+                                        style="width:50px;height:50px">
                                 </lord-icon>
                             </button>
-                        </td>
-                    </tr>
+                        </div>
 
-                    <tr th:if="${#lists.isEmpty(listaProd)}">
-                        <td colspan="8" style="text-align:center">No hay productos disponibles.</td>
-                    </tr>
+                        <table id="tablaProductos" class="tabla-consultas">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Precio (Unidad)</th>
+                                <th>Existencias</th>
+                                <th>Vencimiento</th>
+                                <th>Estado</th>
+                                <th colspan="2" style="text-align:center">Acciones</th>
+                            </tr>
+                            </thead>
 
-                    </tbody>
-                </table>
+                            <tbody>
+                            <tr th:each="p : ${listaProd}">
+                                <td th:text="${p.idProducto}"></td>
+                                <td th:text="${p.nombreProducto}"></td>
+                                <td th:text="${p.tipoProducto}"></td>
+                                <td th:text="${p.valorUnitarioProducto}"></td>
+                                <td th:text="${p.cantExistProducto}"></td>
+                                <td th:text="${#temporals.format(p.fechaVencimientoProducto, 'dd-MM-yyyy')}"></td>
+
+                                <td>
+                                    <input type="checkbox"
+                                           th:id="'switch_' + ${p.idProducto}"
+                                           th:data-id="${p.idProducto}"
+                                           th:checked="${p.estadoProducto} == true">
+                                    <label th:for="'switch_' + ${p.idProducto}" class="check-trail">
+                                        <span class="check-handler"></span>
+                                    </label>
+                                </td>
+
+                                <td>
+                                    <a th:href="@{/productos/formAct/{id}(id=${p.idProducto})}"
+                                       class="btn btn-sm btn-primary btn-actualizar">
+                                        <lord-icon
+                                                src="https://cdn.lordicon.com/ibckyoan.json"
+                                                trigger="hover"
+                                                colors="primary:#ffffff"
+                                                style="width:30px;height:30px">
+                                        </lord-icon>
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-sm btn-danger delete-producto"
+                                            th:data-id="${p.idProducto}">
+                                        <lord-icon
+                                                src="https://cdn.lordicon.com/oqeixref.json"
+                                                trigger="morph"
+                                                state="morph-trash-full"
+                                                colors="primary:#ffffff"
+                                                style="width:30px;height:30px">
+                                        </lord-icon>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(listaProd)}">
+                                <td colspan="8" style="text-align:center">No hay productos disponibles.</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
+            <div class="tab-pane fade" id="catalog-pane" role="tabpanel">
+                <div th:replace="~{producto/catalogo :: seccionCatalogo}"></div>
+            </div>
         </div>
+
         <div th:replace="~{/producto/modalConsultas :: modalConsultas}"></div>
         <div th:replace="~{/layout/footers/footerDashboard :: footerDashboard}"></div>
     </main>

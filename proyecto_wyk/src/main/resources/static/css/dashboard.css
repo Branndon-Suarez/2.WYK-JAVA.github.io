@@ -516,6 +516,43 @@ textarea {
   padding-left: 28px;
 }
 
+/* --------- ESTILOS DE CATÁLOGO - PESTAÑAS -------- */
+.custom-tabs {
+    border-bottom: 2px solid var(--ring);
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.custom-tabs .nav-link {
+    background: #e2e8f0;
+    color: var(--muted);
+    border: none !important;
+    border-radius: 12px 12px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.custom-tabs .nav-link.active {
+    background-color: var(--primary) !important;
+    color: white !important;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+}
+
+.custom-tabs .nav-link:hover:not(.active) {
+    background-color: #cbd5e1;
+    color: var(--text);
+}
+
+/* --- AISLAMIENTO DEL CATÁLOGO --- */
+/* Esto asegura que el catálogo use su propio flujo y no el grid del dashboard */
+#catalog-pane {
+    padding: 20px;
+    background: #fff;
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--ring);
+}
 
 /*------------------------------------ RESPONSIVE GRID ------------------------------------*/
 .layout {
@@ -523,3 +560,5 @@ textarea {
     grid-template-columns: 1fr;
     gap: 18px;
 }
+
+

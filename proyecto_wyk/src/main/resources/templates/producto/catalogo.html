@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<main class="main-content">
+    <section th:fragment="seccionCatalogo" class="container-catalogo-visual">
+        <link rel="stylesheet" th:href="@{/css/catalogo.css}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+        <h1 class="heading-1">Catálogo de Productos</h1>
+
+        <div class="container-products">
+            <div th:each="p : ${listaProdCatalogo}" class="card-product">
+
+                <div class="container-img">
+                    <img th:if="${p.tipoProducto == 'PANADERIA'}" src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=400" alt="Pan" />
+                    <img th:if="${p.tipoProducto == 'PASTELERIA'}" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=400" alt="Pastel" />
+                    <img th:if="${p.tipoProducto == 'ASEO'}" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400" alt="Aseo" />
+
+                    <span th:if="${p.cantExistProducto <= 5}" class="discount">¡Últimas unidades!</span>
+                </div>
+
+                <div class="content-card-product">
+                    <h3 th:text="${p.nombreProducto}">Nombre</h3>
+
+                    <span class="category-tag" th:text="${p.tipoProducto}">Categoría</span>
+
+                    <div class="price-section">
+                        <p class="price" th:text="'$' + ${#numbers.formatDecimal(p.valorUnitarioProducto, 0, 'POINT', 0, 'COMMA')}"></p>
+
+                        <p class="stock">Stock: <span th:text="${p.cantExistProducto}"></span></p>
+
+                        <p class="expiry" style="font-size: 1.1rem; color: #999; margin-top: 5px;">
+                            Vence: <span th:text="${#temporals.format(p.fechaVencimientoProducto, 'dd/MM/yyyy')}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

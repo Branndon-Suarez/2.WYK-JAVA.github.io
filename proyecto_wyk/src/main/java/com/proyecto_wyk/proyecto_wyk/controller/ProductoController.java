@@ -37,6 +37,7 @@ public class ProductoController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("listaProd", productoService.listarProducto());
+        model.addAttribute("listaProdCatalogo", productoService.listarTodosActivos());
         model.addAttribute("prodExistentes", productoService.cantProdExistentes());
         model.addAttribute("prodActivos", productoService.cantProdActivos());
         model.addAttribute("prodInactivos", productoService.cantProdInactivos());
