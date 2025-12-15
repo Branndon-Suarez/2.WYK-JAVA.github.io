@@ -1,52 +1,48 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const tabla = document.getElementById('tablaProducciones');
-    const tbodyDetalle = document.getElementById('cuerpoTablaDetalleProduccion');
-    const modal = new bootstrap.Modal(document.getElementById('detalleProduccionModal'));
+    const modalElement = document.getElementById('detalleProduccionModal');
+    const tableBody = document.getElementById('detalleProduccionBody');
+    const loteDisplay = document.getElementById('loteNombreDisplay');
 
-    if (tabla) {
-        tabla.addEventListener('click', function (e) {
-            // Usamos el nuevo selector CSS
-            const button = e.target.closest('.btn-detalle-produccion');
+    if (modalElement) {
+        modalElement.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id-produccion');
 
-            if (button) {
-                // Obtenemos el ID del nuevo atributo de datos
-                const idProduccion = button.getAttribute('data-id-produccion');
+            const fila = button.closest('tr');
+            const nombreLote = fila ? fila.querySelector('td:nth-child(2)').textContent : "N/A";
+            loteDisplay.textContent = nombreLote;
 
-                tbodyDetalle.innerHTML = '<tr><td colspan="3" style="text-align:center;">Cargando detalles...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Cargando...</td></tr>';
 
-                fetch(APP_URL + 'produccion/getDetalleProduccionAjax?id=' + idProduccion)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error de red o ID de producción no encontrado.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success && data.detalle.length > 0) {
-                            let html = '';
+            fetch(`${window.APP_URL}produccion/listarDetallesProduccionModal?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos del detalle recibidos:", data); // Esto te dirá los nombres reales
 
-                            data.detalle.forEach(item => {
-                                html += `
-                                    <tr>
-                                        <td>${item.NOMBRE_ITEM || 'N/A'}</td>
-                                        <td>${item.CANTIDAD || '0'} ${item.UNIDAD_MEDIDA || ''}</td>
-                                        <td>${item.TIPO_ITEM || 'N/A'}</td>
-                                    </tr>
-                                `;
-                            });
-                            tbodyDetalle.innerHTML = html;
-                            modal.show();
-                        } else {
-                            tbodyDetalle.innerHTML = '<tr><td colspan="3" style="text-align:center;">No se encontraron detalles para esta producción.</td></tr>';
-                            Swal.fire('Error', data.message || 'No se encontraron detalles para esta producción.', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al obtener detalle:', error);
-                        tbodyDetalle.innerHTML = '<tr><td colspan="3" style="text-align:center;">Error al cargar los datos.</td></tr>';
-                        Swal.fire('Error', 'No se pudo cargar el detalle de la producción.', 'error');
-                    });
-            }
+                    if (data.success && data.detalle && data.detalle.length > 0) {
+                        tableBody.innerHTML = '';
+                        data.detalle.forEach(item => {
+                            // Soporte para ambos formatos (Mayúsculas del controlador o minúsculas)
+                            const nombre = item.NOMBRE_MATERIA_PRIMA || item.nombreMateriaPrima || "Sin nombre";
+                            const cantidad = item.CANTIDAD_REQUERIDA || item.cantidadRequerida || 0;
+                            const unidad = item.PRESENTACION || item.presentacion || "N/A";
+
+                            tableBody.innerHTML += `
+                                <tr>
+                                    <td>${nombre}</td>
+                                    <td><strong>${cantidad}</strong></td>
+                                    <td>${unidad}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No hay insumos registrados para esta producción</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en fetch detalle:', error);
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error al conectar con el servidor</td></tr>';
+                });
         });
     }
 });

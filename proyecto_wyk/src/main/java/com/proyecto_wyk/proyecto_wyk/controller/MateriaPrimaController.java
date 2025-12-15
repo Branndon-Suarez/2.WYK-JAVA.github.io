@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/MateriasPrimas")
+@RequestMapping("/materiasPrimas")
 public class MateriaPrimaController {
     private final MateriaPrimaService materiaPrimaService;
 

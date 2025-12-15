@@ -31,6 +31,10 @@ public class ProduccionService {
         return produccionRepository.findAll();
     }
 
+    public List<DetalleProduccion> findDetalleProduccionByIdProduccion(Long idProduccion) {
+        return detalleProduccionRepository.findByProduccion_IdProduccion(idProduccion);
+    }
+
     public long cantidadProduccionesExistentes() {
         return produccionRepository.count();
     }
